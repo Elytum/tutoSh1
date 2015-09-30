@@ -27,5 +27,6 @@ int				main(int argc, char **argv, char **env_table)
 		return (-1);
 	env->env_table = env_table;
 	builtin_env(env);
+	return (0);
 }
 

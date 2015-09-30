@@ -40,4 +40,19 @@ Procédons donc en plusieurs sous-étapes:
 	Ainsi, si tout fonctionne, l'appel de "builtin_env(env)" devrait afficher la même chose que "env" dans n'importe quel shell.
 
 
-			-Partie II) 
+			-Partie II) Gestion de la récupération de la ligne:
+	Maintenant qu'on a pu récupérer notre environnement on veut récupérer notre ligne pour pouvoir par la suite exécuter notre
+	builtin env. On appel get_next_line et pour vérifier on lance get_next_line puis on écris la ligne.
+	Une fois ceci fait, on peut observer un problème de distinction entre la ligne entrée et la ligne de sortie,
+	d'où l'intérêt du préfixe "?> " devant le prompt, on modifie donc l'appel à get_next_line de sorte à ce que le programme
+	puisse par exemple produire ceci:
+	
+		Début du programme:
+	?> Bonjour
+	Bonjour
+	?> La prochaine ligne sera vide !
+	La prochaine ligne sera vide !
+	?> 
+
+	?>
+		Fin du programme:
