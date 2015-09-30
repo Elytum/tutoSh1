@@ -29,4 +29,3 @@ int				main(int argc, char **argv, char **env_table)
 	builtin_env(env);
 	return (0);
 }
-

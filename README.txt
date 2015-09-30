@@ -23,7 +23,9 @@ des commandes multiples à l'aide de ';' etc...
 
 
 Procédons donc en plusieurs sous-étapes:
+
 			-Partie I) Récupération de l'environnement et builtin "env":
+
 	Premièrement, qu'est-ce que l'environnement ? C'est un tableau de chaines charactères (char **) permettant
 	d'indiquer différentes informations liées au fonctionnement même du shell, un peu comme une version clean
 	des structures "env" que nous utilisons. Comment le récupérer ? Rien de plus simple, le main le peut.
@@ -40,7 +42,10 @@ Procédons donc en plusieurs sous-étapes:
 	Ainsi, si tout fonctionne, l'appel de "builtin_env(env)" devrait afficher la même chose que "env" dans n'importe quel shell.
 
 
+
+
 			-Partie II) Gestion de la récupération de la ligne:
+
 	Maintenant qu'on a pu récupérer notre environnement on veut récupérer notre ligne pour pouvoir par la suite exécuter notre
 	builtin env. On appel get_next_line et pour vérifier on lance get_next_line puis on écris la ligne.
 	Une fois ceci fait, on peut observer un problème de distinction entre la ligne entrée et la ligne de sortie,
@@ -56,3 +61,27 @@ Procédons donc en plusieurs sous-étapes:
 
 	?>
 		Fin du programme:
+
+
+
+
+			-Partie III) Récupération de la commande à exécuter:
+	Maintenant, nous pouvons lancer le builtin env, et nous pouvons récupérer une ligne, mais comment savoir si la ligne demande
+	de lancer le builtin env, ou nous donne la recette des crèpes au whisky.
+	Pour se faire, on ajoute la fonction: char *get_called_command(char *line) de sorte à ce que:
+	Si line = "env", get_called_command retourne "env",
+	si line = "env lolilol", get_called_command retourne "env",
+	si line = "crepes_whisky", get_called_command retourne "crepes_whisky",
+	si line = "tiramisu c'est meilleur que ile_flotante !", get_called_command retourne "ile_flotante".
+		En effet, c'est une exception, car la fonction se doit d'être intelligente et de reconnaître les erreurs ^^.
+	Blague à part, voici ce que doit faire la fonction.
+
+
+
+
+			-Partie IV) Et enfin, jouons aux LEGO !
+	Nous pouvons actuellement: Demander une ligne, connaître la fonction que l'utilisateur demande et lancer env, tentons d'assembler tout ça.
+	Un peu d'imaginations, essaye, en cas de problème, lis le bloc suivant.
+					On lance en boucle le promp, si line n'est pas vide, on lance get_called_command pour savoir la ligne que l'utilisateur
+					veut lancer. On la compare au nom de notre builtin, env. S'il n'y a aucune différence et que donc la commande demandée est
+					env, on lance builtin_env, sinon on indique que la commande n'a pas été trouvée.
