@@ -97,7 +97,7 @@ Procédons donc en plusieurs sous-étapes:
 			-Partie V) Maintenant qu'on a un shell en LEGO, il nous faut plus de blocs, pour l'instant, on a un carré,
 							un vaisseau c'est carrément plus classe !
 
-	Commençons par le builtin exit. Il fonctionne comme suit:
+	Commençons par le builtin "exit". Il fonctionne comme suit:
 		-Si on indique une valeur correcte (0, 42, -1 ...) il lance un exit sur cette valeur.
 		-Si on indique rien, il lance un exit sur 0.
 		-Sinon, en cas de paramètre invalide, il lance aussi exit sur 0.
@@ -113,7 +113,7 @@ Procédons donc en plusieurs sous-étapes:
 				-On observera que "exit -1" aura pour valeur "255" et non "-1", c'est du au fait que la valeur soit codée sur un unsigned char,
 					qui ne peut être négatif et va donc overflow, d'où -1 -> 255.
 
-	Continuons avec le builtin setenv. Il n'est pas explicitement définis, et n'existe pas partout,
+	Continuons avec le builtin "setenv". Il n'est pas explicitement définis, et n'existe pas partout,
 		la définition sur "http://nature.berkeley.edu/~casterln/tcsh/Builtin_commands.html" est:
 			"Without arguments, prints the names and values of all environment variables. Given name,
 			sets the environment variable name to value or, without value, to the null string.".
@@ -125,3 +125,5 @@ Procédons donc en plusieurs sous-étapes:
 			"setenv" lancera un "env"
 			"setenv lol" ajoutera/changera "lol" dans le tableau de variables d'environnement et lui donnera la valeur "" -> "lol=" dans env.
 			"setenv couleur bleu" ajoutera/changera "couleur" dans le tableau de variables d'environnement et lui donnera la valeur "bleu" -> "couleur=bleu" dans env.
+
+	Poursuivons avec le builtin "unsetenv". Il retire la variable d'environnement du tableau dont le nom correspond avec l'argument donné.
