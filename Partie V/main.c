@@ -145,6 +145,45 @@ void			builtin_setenv(t_env *env)
 	}
 }
 
+void			do_unsetenv(t_env *env, char *line)
+{
+	char		**ptr;
+
+	ptr = env->env_table;
+	while (*ptr)
+	{
+		if (!strcmp(get_env_name(*ptr), line))
+		{
+			free(ptr[0]);
+			ptr[0] = ptr[1];
+			while (ptr[1])
+			{
+				ptr[0] = ptr[1];
+				++ptr;
+			}
+			ptr[0] = NULL;
+			return ;
+		}
+		++ptr;
+	}
+}
+
+void			builtin_unsetenv(t_env *env)
+{
+	char		*ptr;
+	char		*name;
+	const char	error[] = "Wrong format for unsetenv, should be \"unsetenv VARIABLE\"\n";
+
+	ptr = env->line + sizeof("unsetenv") - 1;
+	name = NULL;
+	while (*ptr == ' ' || *ptr == '\t')
+		++ptr;
+	if (!*ptr)
+		write(1, error, sizeof(error) - 1);
+	else
+		do_unsetenv(env, ptr);
+}
+
 void			builtin_exit(t_env *env)
 {
 	int			ret;
@@ -223,6 +262,8 @@ int				main(int argc, char **argv, char **env_table)
 				builtin_env(env);
 			else if (!strcmp(env->command, "setenv"))
 				builtin_setenv(env);
+			else if (!strcmp(env->command, "unsetenv"))
+				builtin_unsetenv(env);
 			else if (!strcmp(env->command, "exit"))
 				builtin_exit(env);
 			else
