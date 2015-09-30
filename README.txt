@@ -40,6 +40,8 @@ Procédons donc en plusieurs sous-étapes:
 	}				t_env;
 
 	Ainsi, si tout fonctionne, l'appel de "builtin_env(env)" devrait afficher la même chose que "env" dans n'importe quel shell.
+	Pour des raisons d'implémentations de futurs builtins, il est plus pratique d'avoir une copie du tableau de variables
+	d'environnement au lieu d'une simple copie du pointeur, il est donc préférable de faire un strdup sur chaque sous_élément de env.
 
 
 
@@ -81,7 +83,7 @@ Procédons donc en plusieurs sous-étapes:
 
 
 			-Partie IV) Et enfin, jouons aux LEGO !
-			
+
 	Nous pouvons actuellement: Demander une ligne, connaître la fonction que l'utilisateur demande et lancer env, tentons d'assembler tout ça.
 	Un peu d'imaginations, essaye, en cas de problème, lis le bloc suivant.
 					On lance en boucle le promp, si line n'est pas vide, on lance get_called_command pour savoir la ligne que l'utilisateur

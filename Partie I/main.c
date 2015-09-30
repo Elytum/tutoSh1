@@ -19,13 +19,37 @@ void			builtin_env(t_env *env)
 	}
 }
 
+static char		**copy_string_array(char **array)
+{
+	char		**new_array;
+	char		**new_ptr;
+	char		**ptr;
+	size_t		len;
+
+	ptr = array;
+	len = 0;
+	while (*ptr)
+	{
+		++ptr;
+		++len;
+	}
+	if (!(new_array = (char **)malloc(sizeof(char *) * (len + 1))))
+		return (NULL);
+	new_ptr = new_array;
+	ptr = array;
+	while (*ptr)
+		*new_ptr++ = strdup(*ptr++);
+	*new_ptr = NULL;
+	return (new_array);
+}
+
 int				main(int argc, char **argv, char **env_table)
 {
 	t_env		*env;
 
 	if (!(env = (t_env *)malloc(sizeof(t_env))))
 		return (-1);
-	env->env_table = env_table;
+	env->env_table = copy_string_array(env_table);
 	builtin_env(env);
 	return (0);
 }

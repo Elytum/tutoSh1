@@ -53,6 +53,30 @@ void			unknown_command(char *command)
 	write(1, "\n", 1);
 }
 
+static char		**copy_string_array(char **array)
+{
+	char		**new_array;
+	char		**new_ptr;
+	char		**ptr;
+	size_t		len;
+
+	ptr = array;
+	len = 0;
+	while (*ptr)
+	{
+		++ptr;
+		++len;
+	}
+	if (!(new_array = (char **)malloc(sizeof(char *) * (len + 1))))
+		return (NULL);
+	new_ptr = new_array;
+	ptr = array;
+	while (*ptr)
+		*new_ptr++ = strdup(*ptr++);
+	*new_ptr = NULL;
+	return (new_array);
+}
+
 int			main(int argc, char **argv, char **env_table)
 {
 	t_env		*env;
@@ -60,7 +84,7 @@ int			main(int argc, char **argv, char **env_table)
 
 	if (!(env = (t_env *)malloc(sizeof(t_env))))
 		return (-1);
-	env->env_table = env_table;
+	env->env_table = copy_string_array(env_table);
 	write(1, PROMPT, sizeof(PROMPT) - 1);
 	while (get_next_line(1, &env->line) > 0)
 	{
