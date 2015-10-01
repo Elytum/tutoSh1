@@ -43,6 +43,10 @@ Procédons donc en plusieurs sous-étapes:
 	Pour des raisons d'implémentations de futurs builtins, il est plus pratique d'avoir une copie du tableau de variables
 	d'environnement au lieu d'une simple copie du pointeur, il est donc préférable de faire un strdup sur chaque sous_élément de env.
 
+							TODO list récapitulative:
+								-Créer une structure t_env.
+								-Créer une instance de cette structure, l'initialiser en enregistrant une copie du tableau de variables d'evironnement.
+								-Faire une fonction "void builtin_env(t_env *env)" qui affiche le tableau des variables d'environnement.
 
 
 
@@ -64,7 +68,9 @@ Procédons donc en plusieurs sous-étapes:
 	?>
 		Fin du programme:
 
-
+							TODO list récapitulative:
+								-Appeler get_next_line tant qu'il reste des lignes à lire et les afficher à chaque fois, en écrivant "?> "
+									avant chaque appel à get_next_line.
 
 
 			-Partie III) Récupération de la commande à exécuter:
@@ -79,6 +85,8 @@ Procédons donc en plusieurs sous-étapes:
 		En effet, c'est une exception, car la fonction se doit d'être intelligente et de reconnaître les erreurs ^^.
 	Blague à part, voici ce que doit faire la fonction.
 
+							TOTO list récapitulative:
+								-Créer une fonction "char *get_called_command(char *line)" qui renvoie le premier mot de "line".
 
 
 
@@ -91,6 +99,11 @@ Procédons donc en plusieurs sous-étapes:
 					env, on lance builtin_env, sinon on indique que la commande n'a pas été trouvée.
 	Et voilà, un shell qui commence à bien fonctionner !
 
+							TODO lsit récapitulative:
+								-Appeler en boucle get_next_line comme dans le II) mais au lieu de simplement réécrire la ligne, on fait un strcmp
+									sur le premier mot de chaques lignes, obtenu à l'aide de get_called_command, de la partie III).
+								-Si get_called_command(line) == "env", lancer get_env, sinon, lancer une fonction qui affichera:
+									"NOM_DU_SHELL: command not found: RETOUR_DE_GET_CALLED_COMMAND\n"
 
 
 
