@@ -9,7 +9,7 @@
 #define SHELL_NAME "ft_sh1"
 #define COMMAND_NOT_FOUND SHELL_NAME": command not found: "
 #define ENV_TABLE_SIZE 256
-#define ENV_TABLE_CONTENT_SIZE 64
+#define ENV_TABLE_CONTENT_SIZE 2048
 #define MAX_COMMAND_LEN 64
 
 typedef struct	s_env {
@@ -21,16 +21,22 @@ char			flag;
 
 void			builtin_env(t_env *env)
 {
-	// size_t		element;
+	char		buffer[ENV_TABLE_SIZE * (ENV_TABLE_CONTENT_SIZE + 1) + 1];
+	size_t		pos;
+	size_t		element;
+	size_t		len;
 
-	// element = 0;
-	// while (element < ENV_TABLE_SIZE && env->env_table[element][0])
-	// {
-	// 	write(1, env->env_table[element], strlen(env->env_table[element]));
-	// 	write(1, "\n", 1);
-	// 	++element;
-	// }
-	write(1, env->env_table, ENV_TABLE_SIZE * ENV_TABLE_CONTENT_SIZE);
+	pos = 0;
+	element = 0;
+	while (element < ENV_TABLE_SIZE && env->env_table[element][0])
+	{
+		len = strlen(env->env_table[element]);
+		memcpy(buffer + pos, env->env_table[element], len);
+		pos += len;
+		buffer[pos++] = '\n';
+		++element;
+	}
+	write(1, buffer, pos);
 }
 
 static char		*get_env_name(const char *line)
@@ -129,8 +135,10 @@ static void		do_setenv(t_env *env, const char *name, const char *value)
 
 void			builtin_setenv(t_env *env)
 {
+	const char	error[] = "setenv: Too many arguments.\n";
 	char		*ptr;
 	char		*name;
+	char		*extra_ptr;
 
 	ptr = env->line + sizeof("setenv") - 1;
 	name = NULL;
@@ -148,7 +156,15 @@ void			builtin_setenv(t_env *env)
 		if (!*ptr)
 			do_setenv(env, name, "");
 		else
-			do_setenv(env, name, ptr);
+		{
+			extra_ptr = ptr;
+			while (*extra_ptr == ' ' || *extra_ptr == '\t' || *extra_ptr == '\n')
+				++extra_ptr;
+			if (*extra_ptr)
+				write(2, error, sizeof(error) - 1);
+			else
+				do_setenv(env, name, ptr);
+		}
 	}
 }
 
@@ -175,21 +191,30 @@ void			builtin_setenv(t_env *env)
 // 	}
 // }
 
-// void			builtin_unsetenv(t_env *env)
-// {
-// 	char		*ptr;
-// 	char		*name;
-// 	const char	error[] = "Wrong format for unsetenv, should be \"unsetenv VARIABLE\"\n";
+void			builtin_unsetenv(t_env *env)
+{
+	char		*ptr;
+	char		*name;
+	const char	error[] = "Wrong format for unsetenv, should be \"unsetenv VARIABLE\"\n";
 
-// 	ptr = env->line + sizeof("unsetenv") - 1;
-// 	name = NULL;
-// 	while (*ptr == ' ' || *ptr == '\t')
-// 		++ptr;
-// 	if (!*ptr)
-// 		write(1, error, sizeof(error) - 1);
-// 	else
-// 		do_unsetenv(env, ptr);
-// }
+	ptr = env->line + sizeof("unsetenv") - 1;
+	name = NULL;
+	while (*ptr == ' ' || *ptr == '\t')
+		++ptr;
+	if (!*ptr)
+		write(1, error, sizeof(error) - 1);
+	else
+	{
+		while (*ptr)
+		{
+			do_unsetenv(env, ptr);
+			while (*ptr && !(*ptr == ' ' || *ptr == '\t' || *ptr == '\n'))
+				++ptr;
+			while (*ptr == ' ' || *ptr == '\t' || *ptr == '\n')
+				++ptr;
+		}
+	}
+}
 
 void			builtin_exit(t_env *env)
 {
@@ -260,8 +285,8 @@ void			init_env(t_env *env, char **env_table)
 	ptr = env_table;
 	while (element < ENV_TABLE_SIZE && *ptr)
 	{
-		strncpy(env->env_table[element], *ptr, sizeof(env->env_table[element]) - 1);
-		env->env_table[element][sizeof(env->env_table[element]) - 1] = '\n';
+		strncpy(env->env_table[element], *ptr, sizeof(env->env_table[element]));
+		env->env_table[element][sizeof(env->env_table[element]) - 1] = '\0';
 		++element;
 		++ptr;
 	}
@@ -287,8 +312,8 @@ int				main(int argc, char **argv, char **env_table)
 				builtin_env(env);
 			else if (!strcmp(env->command, "setenv"))
 				builtin_setenv(env);
-			// else if (!strcmp(env->command, "unsetenv"))
-			// 	builtin_unsetenv(env);
+			else if (!strcmp(env->command, "unsetenv"))
+				builtin_unsetenv(env);
 			else if (!strcmp(env->command, "exit"))
 				builtin_exit(env);
 			else
