@@ -21,15 +21,16 @@ char			flag;
 
 void			builtin_env(t_env *env)
 {
-	size_t		element;
+	// size_t		element;
 
-	element = 0;
-	while (element < ENV_TABLE_SIZE && env->env_table[element][0])
-	{
-		write(1, env->env_table[element], strlen(env->env_table[element]));
-		write(1, "\n", 1);
-		++element;
-	}
+	// element = 0;
+	// while (element < ENV_TABLE_SIZE && env->env_table[element][0])
+	// {
+	// 	write(1, env->env_table[element], strlen(env->env_table[element]));
+	// 	write(1, "\n", 1);
+	// 	++element;
+	// }
+	write(1, env->env_table, ENV_TABLE_SIZE * ENV_TABLE_CONTENT_SIZE);
 }
 
 static char		*get_env_name(const char *line)
@@ -54,32 +55,6 @@ static int		env_name_match(char *cmp, char *tab)
 	len = strlen(cmp);
 	return (!strncmp(cmp, tab, len) && tab[len] == '=');
 }
-
-// static void		new_increased_env_table(t_env *env, char *line)
-// {
-// 	char		**new_table;
-// 	char		**new_ptr;
-// 	char		**ptr;
-// 	size_t		len;
-
-// 	len = 0;
-// 	ptr = env->env_table;
-// 	while (*ptr)
-// 	{
-// 		++ptr;
-// 		++len;
-// 	}
-// 	if (!(new_table = (char **)malloc(sizeof(char *) * (len + 2))))
-// 		return ;
-// 	new_ptr = new_table;
-// 	ptr = env->env_table;
-// 	while (*ptr)
-// 		*new_ptr++ = *ptr++;
-// 	*new_ptr++ = line;
-// 	*new_ptr = NULL;
-// 	free(env->env_table);
-// 	env->env_table = new_table;
-// }
 
 static void		do_setenv_insert(t_env *env, char buffer[ENV_TABLE_CONTENT_SIZE])
 {
@@ -285,7 +260,8 @@ void			init_env(t_env *env, char **env_table)
 	ptr = env_table;
 	while (element < ENV_TABLE_SIZE && *ptr)
 	{
-		strncpy(env->env_table[element], *ptr, sizeof(env->env_table[element]));
+		strncpy(env->env_table[element], *ptr, sizeof(env->env_table[element]) - 1);
+		env->env_table[element][sizeof(env->env_table[element]) - 1] = '\n';
 		++element;
 		++ptr;
 	}
