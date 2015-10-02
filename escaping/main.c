@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define LINE_SIZE 4096
-#define STRING "te\\\r st"
+#define STRING " ~te\"r` s`l\"t"
 
 #define TEST_SIZE 15
 #include <stdio.h>
@@ -12,7 +12,9 @@
 #define DOUBLE_QUOTED 4
 #define BACK_QUOTED 5
 #define BACKSLASHED 6
-#define REMOVE 7
+#define LOCAL_VARIABLE 7
+#define TILDE 8
+#define REMOVE 9
 
 typedef struct	s_env
 {
@@ -21,7 +23,24 @@ typedef struct	s_env
 	char		line[LINE_SIZE];
 	char		buffer[LINE_SIZE];
 	char		interprete[LINE_SIZE];
+	int			argc;
+	char		**argv;
 }				t_env;
+
+void		debug_env(t_env *env);
+void		interprete_simple_quote(t_env *env);
+void		interprete_double_quote(t_env *env);
+void		interprete_back_quote(t_env *env);
+void		interprete_value(t_env *env);
+void		interprete_backslash(t_env *env);
+void		interprete_tilde(t_env *env);
+void		interprete_spacing(t_env *env);
+void		interprete_normal(t_env *env);
+void		do_interprete(t_env *env);
+void		do_process(t_env *env);
+void		do_simplify(t_env *env);
+int			set_arguments(t_env *env);
+void		launch_interprete(t_env *env);
 
 void		debug_env(t_env *env)
 {
@@ -71,7 +90,7 @@ void		interprete_simple_quote(t_env *env)
 	{
 		if (env->buffer[env->pos] == '\'')
 		{
-			env->interprete[env->pos++] = SIMPLE_QUOTED;
+			env->interprete[env->pos++] = REMOVE;
 			return ;
 		}
 		else
@@ -86,9 +105,11 @@ void		interprete_double_quote(t_env *env)
 	{
 		if (env->buffer[env->pos] == '\"')
 		{
-			env->interprete[env->pos++] = DOUBLE_QUOTED;
+			env->interprete[env->pos++] = REMOVE;
 			return ;
 		}
+		else if (env->buffer[env->pos] == '`')
+			interprete_back_quote(env);
 		else
 			env->interprete[env->pos++] = DOUBLE_QUOTED;
 	}
@@ -101,7 +122,7 @@ void		interprete_back_quote(t_env *env)
 	{
 		if (env->buffer[env->pos] == '`')
 		{
-			env->interprete[env->pos++] = BACK_QUOTED;
+			env->interprete[env->pos++] = REMOVE;
 			return ;
 		}
 		else
@@ -117,6 +138,21 @@ void		interprete_backslash(t_env *env)
 	else
 		env->interprete[env->pos] = INTERPRETED;
 	++env->pos;
+}
+
+void		interprete_value(t_env *env)
+{
+	env->interprete[env->pos++] = REMOVE;
+	while (env->buffer[env->pos] != '\'' && env->buffer[env->pos] != '\"' &&
+			env->buffer[env->pos] != '\\' && env->buffer[env->pos] != '`' &&
+			env->buffer[env->pos] != '$' && env->buffer[env->pos] != ' ' &&
+			env->buffer[env->pos] != '\t')
+		env->interprete[env->pos++] = LOCAL_VARIABLE;
+}
+
+void		interprete_tilde(t_env *env)
+{
+	env->interprete[env->pos++] = TILDE;
 }
 
 void		interprete_spacing(t_env *env)
@@ -142,6 +178,10 @@ void		do_interprete(t_env *env)
 			interprete_backslash(env);
 		else if (env->buffer[env->pos] == '`')
 			interprete_back_quote(env);
+		else if (env->buffer[env->pos] == '$')
+			interprete_value(env);
+		else if (env->buffer[env->pos] == '~')
+			interprete_tilde(env);
 		else if (env->buffer[env->pos] == ' ' || env->buffer[env->pos] == '\t')
 			interprete_spacing(env);
 		else
@@ -149,80 +189,24 @@ void		do_interprete(t_env *env)
 	}
 }
 
-void		process_simple_quote(t_env *env)
+void		process_back_quotes(t_env *env) // Actually just ignores it
 {
-	env->interprete[env->pos++] = REMOVE;
+	char	kind;
+
+	env->pos = 0;
+	kind = INTERPRETED;
 	while (env->pos <= env->len)
 	{
-		if (env->buffer[env->pos] == '\'')
-		{
-			env->interprete[env->pos++] = REMOVE;
-			return ;
-		}
-		env->interprete[env->pos++] = INTERPRETED;
-	}
-}
-
-void		process_double_quote(t_env *env)
-{
-	env->interprete[env->pos++] = REMOVE;
-	while (env->pos <= env->len)
-	{
-		if (env->buffer[env->pos] == '\"')
-		{
-			env->interprete[env->pos++] = REMOVE;
-			return ;
-		}
-		env->interprete[env->pos++] = INTERPRETED;
-	}
-}
-
-void		process_backslash(t_env *env)
-{
-	// env->interprete[env->pos++] = REMOVE;
-	// printf("SPECIAL:%i\n", env->buffer[env->pos]);
-	// if (env->buffer[env->pos] == '\r')
-	// 	env->interprete[env->pos] = REMOVE;
-	// else
-	// 	env->interprete[env->pos] = INTERPRETED;
-	// ++env->pos;
-}
-
-void		process_back_quote(t_env *env)
-{
-	env->interprete[env->pos++] = REMOVE;
-	while (env->pos <= env->len)
-	{
-		if (env->buffer[env->pos] == '`')
-		{
-			env->interprete[env->pos++] = REMOVE;
-			return ;
-		}
-		env->interprete[env->pos++] = INTERPRETED;
+		if (env->interprete[env->pos] == BACK_QUOTED)
+			env->interprete[env->pos] = kind;
+		kind = env->interprete[env->pos];
+		++env->pos;
 	}
 }
 
 void		do_process(t_env *env)
 {
-	(void)env;
-	// env->pos = 0;
-	// while (env->pos <= env->len)
-	// {
-	// 	printf("\nLoop, env->pos = [%lu]\n", env->pos);
-	// 	debug_env(env);
-	// 	if (env->interprete[env->pos] == INTERPRETED || env->interprete[env->pos] == SPACING)
-	// 		env->pos++;
-	// 	else if (env->interprete[env->pos] == SIMPLE_QUOTED)
-	// 		process_simple_quote(env);
-	// 	else if (env->interprete[env->pos] == DOUBLE_QUOTED)
-	// 		process_double_quote(env);
-	// 	else if (env->interprete[env->pos] == BACKSLASHED)
-	// 		process_back_quote(env);
-	// 	else if (env->interprete[env->pos] == BACK_QUOTED)
-	// 		process_backslash(env);
-	// 	else
-	// 		++env->pos;
-	// }
+	process_back_quotes(env);
 }
 
 void		do_simplify(t_env *env)
@@ -249,6 +233,11 @@ void		do_simplify(t_env *env)
 	}
 }
 
+int			set_arguments(t_env *env)
+{
+
+}
+
 void		launch_interprete(t_env *env)
 {
 	memcpy(env->buffer, env->line, env->len + 1);
@@ -259,13 +248,11 @@ void		launch_interprete(t_env *env)
 		debug_env(env);
 	else
 	{
-		debug_env(env);
-		do_process(env);
-		debug_env(env);
 		do_simplify(env);
-		debug_env(env);
+		do_process(env);
+		// debug_env(env);
+		set_arguments(env);
 	}
-	
 }
 
 int			main(void)
