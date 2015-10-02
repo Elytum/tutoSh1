@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define LINE_SIZE 4096
-#define STRING "\\\\"
+#define STRING "te\\  st"
 
 #define TEST_SIZE 15
 #include <stdio.h>
@@ -21,7 +21,6 @@ typedef struct	s_env
 	char		line[LINE_SIZE];
 	char		buffer[LINE_SIZE];
 	char		interprete[LINE_SIZE];
-	char		process_interprete;
 }				t_env;
 
 void		debug_env(t_env *env)
@@ -67,7 +66,6 @@ void		debug_env(t_env *env)
 
 void		interprete_simple_quote(t_env *env)
 {
-	env->process_interprete = 1;
 	while (env->pos <= env->len)
 	{
 		if (env->buffer[env->pos] == '\'')
@@ -82,7 +80,6 @@ void		interprete_simple_quote(t_env *env)
 
 void		interprete_double_quote(t_env *env)
 {
-	env->process_interprete = 1;
 	while (env->pos <= env->len)
 	{
 		if (env->buffer[env->pos] == '\"')
@@ -97,7 +94,6 @@ void		interprete_double_quote(t_env *env)
 
 void		interprete_back_quote(t_env *env)
 {
-	env->process_interprete = 1;
 	while (env->pos <= env->len)
 	{
 		if (env->buffer[env->pos] == '`')
@@ -112,7 +108,6 @@ void		interprete_back_quote(t_env *env)
 
 void		interprete_backslash(t_env *env)
 {
-	env->process_interprete = 1;
 	env->interprete[env->pos++] = BACKSLASHED;
 }
 
@@ -192,6 +187,30 @@ void		do_process(t_env *env)
 	}
 }
 
+void		do_simplify(t_env *env)
+{
+	size_t			buffer_pos;
+	const size_t	len = env->len;
+
+	buffer_pos = 0;
+	env->pos = 0;
+	while (env->pos <= len)
+	{
+		if (env->interprete[env->pos] == REMOVE)
+		{
+			++env->pos;
+			--env->len;
+		}
+		else
+		{
+			env->buffer[buffer_pos] = env->buffer[env->pos];
+			env->interprete[buffer_pos] = env->interprete[env->pos];
+			++buffer_pos;
+			++env->pos;
+		}
+	}
+}
+
 void		launch_interprete(t_env *env)
 {
 	memcpy(env->buffer, env->line, env->len + 1);
@@ -202,15 +221,11 @@ void		launch_interprete(t_env *env)
 		debug_env(env);
 	else
 	{
-		while (env->process_interprete)
-		{
-			debug_env(env);
-			do_process(env);
-			// do_interprete(env);
-			debug_env(env);
-			env->process_interprete = 0;
-		}
-		// debug_env(env);
+		debug_env(env);
+		do_process(env);
+		debug_env(env);
+		do_simplify(env);
+		debug_env(env);
 	}
 	
 }
