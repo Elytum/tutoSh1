@@ -1,18 +1,18 @@
 #include <stdlib.h>
 #include <string.h>
 #define LINE_SIZE 4096
-#define STRING "Ceci est \" un \test"
+#define STRING "\\\\"
 
 #define TEST_SIZE 15
 #include <stdio.h>
 
 #define INTERPRETED 1
-#define TO_INTERPRETE 2
-#define SPACING 3
-#define SIMPLE_QUOTED 4
-#define DOUBLE_QUOTED 5
-#define BACK_QUOTED 6
-#define BACKSLASHED 7
+#define SPACING 2
+#define SIMPLE_QUOTED 3
+#define DOUBLE_QUOTED 4
+#define BACK_QUOTED 5
+#define BACKSLASHED 6
+#define REMOVE 7
 
 typedef struct	s_env
 {
@@ -21,6 +21,7 @@ typedef struct	s_env
 	char		line[LINE_SIZE];
 	char		buffer[LINE_SIZE];
 	char		interprete[LINE_SIZE];
+	char		process_interprete;
 }				t_env;
 
 void		debug_env(t_env *env)
@@ -64,8 +65,9 @@ void		debug_env(t_env *env)
 		printf("Line is not closed due to a backslash.\n");
 }
 
-void		do_interprete_simple_quote(t_env *env)
+void		interprete_simple_quote(t_env *env)
 {
+	env->process_interprete = 1;
 	while (env->pos <= env->len)
 	{
 		if (env->buffer[env->pos] == '\'')
@@ -78,8 +80,9 @@ void		do_interprete_simple_quote(t_env *env)
 	}
 }
 
-void		do_interprete_double_quote(t_env *env)
+void		interprete_double_quote(t_env *env)
 {
+	env->process_interprete = 1;
 	while (env->pos <= env->len)
 	{
 		if (env->buffer[env->pos] == '\"')
@@ -92,8 +95,9 @@ void		do_interprete_double_quote(t_env *env)
 	}
 }
 
-void		do_interprete_back_quote(t_env *env)
+void		interprete_back_quote(t_env *env)
 {
+	env->process_interprete = 1;
 	while (env->pos <= env->len)
 	{
 		if (env->buffer[env->pos] == '`')
@@ -106,34 +110,36 @@ void		do_interprete_back_quote(t_env *env)
 	}
 }
 
-void		do_interprete_backslash(t_env *env)
+void		interprete_backslash(t_env *env)
 {
+	env->process_interprete = 1;
 	env->interprete[env->pos++] = BACKSLASHED;
 }
 
-void		do_interprete_simple(t_env *env)
+void		do_interprete(t_env *env)
 {
+	env->pos = 0;
 	while (env->pos <= env->len)
 	{
 		if (env->buffer[env->pos] == '\'')
 		{
 			env->interprete[env->pos++] = SIMPLE_QUOTED;
-			do_interprete_simple_quote(env);
+			interprete_simple_quote(env);
 		}
 		else if (env->buffer[env->pos] == '\"')
 		{
 			env->interprete[env->pos++] = DOUBLE_QUOTED;
-			do_interprete_double_quote(env);
+			interprete_double_quote(env);
 		}
 		else if (env->buffer[env->pos] == '\\')
 		{
 			env->interprete[env->pos++] = BACKSLASHED;
-			do_interprete_backslash(env);
+			interprete_backslash(env);
 		}
 		else if (env->buffer[env->pos] == '`')
 		{
-			env->interprete[env->pos++] = BACKSLASHED;
-			do_interprete_back_quote(env);
+			env->interprete[env->pos++] = BACK_QUOTED;
+			interprete_back_quote(env);
 		}
 		else if (env->buffer[env->pos] == ' ' || env->buffer[env->pos] == '\t')
 			env->interprete[env->pos++] = SPACING;
@@ -142,13 +148,71 @@ void		do_interprete_simple(t_env *env)
 	}
 }
 
-void		do_interprete(t_env *env)
+void		process_simple_quote(t_env *env)
+{
+	env->interprete[env->pos++] = REMOVE;
+	env->interprete[env->pos++] = INTERPRETED;
+}
+
+void		process_double_quote(t_env *env)
+{
+	env->interprete[env->pos++] = REMOVE;
+	env->interprete[env->pos++] = INTERPRETED;
+}
+
+void		process_backslash(t_env *env)
+{
+	env->interprete[env->pos++] = REMOVE;
+	env->interprete[env->pos++] = INTERPRETED;
+}
+
+void		process_back_quote(t_env *env)
+{
+	env->interprete[env->pos++] = REMOVE;
+	env->interprete[env->pos++] = INTERPRETED;
+}
+
+void		do_process(t_env *env)
 {
 	env->pos = 0;
+	while (env->pos <= env->len)
+	{
+		if (env->interprete[env->pos] == INTERPRETED || env->interprete[env->pos] == SPACING)
+			env->pos++;
+		else if (env->interprete[env->pos] == SIMPLE_QUOTED)
+			process_simple_quote(env);
+		else if (env->interprete[env->pos] == DOUBLE_QUOTED)
+			process_double_quote(env);
+		else if (env->interprete[env->pos] == BACKSLASHED)
+			process_back_quote(env);
+		else if (env->interprete[env->pos] == BACK_QUOTED)
+			process_backslash(env);
+		else
+			++env->pos;
+	}
+}
+
+void		launch_interprete(t_env *env)
+{
 	memcpy(env->buffer, env->line, env->len + 1);
 	memset(env->interprete, '\0', env->len + 1);
-	do_interprete_simple(env);
-	debug_env(env);
+
+	do_interprete(env);
+	if (env->interprete[env->len] != INTERPRETED && env->interprete[env->len] != SPACING)
+		debug_env(env);
+	else
+	{
+		while (env->process_interprete)
+		{
+			debug_env(env);
+			do_process(env);
+			// do_interprete(env);
+			debug_env(env);
+			env->process_interprete = 0;
+		}
+		// debug_env(env);
+	}
+	
 }
 
 int			main(void)
@@ -160,6 +224,6 @@ int			main(void)
 	memcpy(env->line, STRING, LINE_SIZE - 1);
 	env->line[LINE_SIZE - 1] = '\0';
 	env->len = strlen(env->line);
-	do_interprete(env);
+	launch_interprete(env);
 	return (0);
 }
