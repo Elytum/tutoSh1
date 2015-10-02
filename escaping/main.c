@@ -16,6 +16,11 @@
 #define TILDE 8
 #define REMOVE 9
 
+#define ERROR 0
+#define NO_ERROR 1
+#define TRUE 0
+#define FALSE 1
+
 typedef struct	s_env
 {
 	size_t		len;
@@ -233,9 +238,33 @@ void		do_simplify(t_env *env)
 	}
 }
 
+void			set_argc(t_env *env)
+{
+	char	in_word;
+	size_t	pos;
+
+	env->argc = 0;
+	pos = 0;
+	in_word = FALSE;
+	while (pos < env->len)
+	{
+		if (env->interprete[pos] == SPACING)
+				in_word = FALSE;
+		else
+		{
+			if (in_word == FALSE)
+				++env->argc;
+			in_word = TRUE;
+		}
+		++pos;
+	}
+}
+
 int			set_arguments(t_env *env)
 {
-
+	set_argc(env);
+	printf("There is %i arguments\n", env->argc);
+	return (NO_ERROR);
 }
 
 void		launch_interprete(t_env *env)
@@ -250,7 +279,7 @@ void		launch_interprete(t_env *env)
 	{
 		do_simplify(env);
 		do_process(env);
-		// debug_env(env);
+		debug_env(env);
 		set_arguments(env);
 	}
 }
