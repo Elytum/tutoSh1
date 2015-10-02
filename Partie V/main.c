@@ -158,6 +158,8 @@ void			builtin_setenv(t_env *env)
 		else
 		{
 			extra_ptr = ptr;
+			while (*extra_ptr && !(*extra_ptr == ' ' || *extra_ptr == '\t' || *extra_ptr == '\n'))
+				++extra_ptr;
 			while (*extra_ptr == ' ' || *extra_ptr == '\t' || *extra_ptr == '\n')
 				++extra_ptr;
 			if (*extra_ptr)
@@ -168,34 +170,37 @@ void			builtin_setenv(t_env *env)
 	}
 }
 
-// void			do_unsetenv(t_env *env, char *line)
-// {
-// 	char		**ptr;
+void			do_unsetenv(t_env *env, char *line)
+{
+	size_t		pos;
+	char		*tmp;
+	size_t		len;
 
-// 	ptr = env->env_table;
-// 	while (*ptr)
-// 	{
-// 		if (!strcmp(get_env_name(*ptr), line))
-// 		{
-// 			free(ptr[0]);
-// 			ptr[0] = ptr[1];
-// 			while (ptr[1])
-// 			{
-// 				ptr[0] = ptr[1];
-// 				++ptr;
-// 			}
-// 			ptr[0] = NULL;
-// 			return ;
-// 		}
-// 		++ptr;
-// 	}
-// }
+	pos = 0;
+	while (pos < ENV_TABLE_SIZE && env->env_table[pos][0])
+	{
+		tmp = get_env_name(env->env_table[pos]);
+		len = strlen(tmp);
+		if (!strncmp(tmp, line, len) && (line[len] == ' ' || line[len] == '\t'))
+		{
+			memcpy(env->env_table[pos], env->env_table[pos + 1], ENV_TABLE_CONTENT_SIZE);
+			while (pos < ENV_TABLE_SIZE && env->env_table[pos + 1][0])
+			{
+				memcpy(env->env_table[pos], env->env_table[pos + 1], ENV_TABLE_CONTENT_SIZE);
+				++pos;
+			}
+			env->env_table[pos][0] = '\0';
+			return ;
+		}
+		++pos;
+	}
+}
 
 void			builtin_unsetenv(t_env *env)
 {
+	const char	error[] = "unsetenv: Too few arguments.\n";
 	char		*ptr;
 	char		*name;
-	const char	error[] = "Wrong format for unsetenv, should be \"unsetenv VARIABLE\"\n";
 
 	ptr = env->line + sizeof("unsetenv") - 1;
 	name = NULL;
@@ -250,30 +255,6 @@ void			unknown_command(char *command)
 	write(1, COMMAND_NOT_FOUND, sizeof(COMMAND_NOT_FOUND) - 1);
 	write(1, command, strlen(command));
 	write(1, "\n", 1);
-}
-
-static char		**copy_string_array(char **array)
-{
-	char		**new_array;
-	char		**new_ptr;
-	char		**ptr;
-	size_t		len;
-
-	ptr = array;
-	len = 0;
-	while (*ptr)
-	{
-		++ptr;
-		++len;
-	}
-	if (!(new_array = (char **)malloc(sizeof(char *) * (len + 1))))
-		return (NULL);
-	new_ptr = new_array;
-	ptr = array;
-	while (*ptr)
-		*new_ptr++ = strdup(*ptr++);
-	*new_ptr = NULL;
-	return (new_array);
 }
 
 void			init_env(t_env *env, char **env_table)
