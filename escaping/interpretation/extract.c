@@ -23,11 +23,34 @@ void			set_argc(t_env *env)
 	}
 }
 
+size_t		extract_len(t_env *env, size_t *pos)
+{
+	size_t	len;
+
+	while (pos < env->len && env->interprete[pos] != SPACING)
+	{
+		if (env->interprete[pos] != NORMAL)
+			;
+		else if (env->interprete[pos] != SIMPLE_QUOTED)
+			;
+		else if (env->interprete[pos] != DOUBLE_QUOTED)
+			;
+		else if (env->interprete[pos] != BACK_QUOTED)
+			;
+		else if (env->interprete[pos] != BACKSLASH_QUOTED)
+			;
+		else if (env->interprete[pos] != SIMPLE_QUOTED)
+			;
+		else if (env->interprete[pos] != SIMPLE_QUOTED)
+			;
+	}
+}
+
 int			set_argv(t_env *env)
 {
 	size_t	pos;
-	size_t	old_pos;
 	char	**ptr;
+	size_t	len;
 
 	if (!(env->argv = (char **)malloc(sizeof(char *) * (env->argc + 1))))
 		return (ERROR);
@@ -37,11 +60,11 @@ int			set_argv(t_env *env)
 	{
 		while (pos < env->len && env->interprete[pos] == SPACING)
 			++pos;
-		old_pos = pos;
+		len = extract_len(env, &pos);
 		while (pos < env->len && env->interprete[pos] != SPACING)
 			++pos;
-		if (old_pos - pos)
-			*ptr++ = strndup(env->buffer + old_pos, pos - old_pos);
+				// if (old_pos - pos)
+				// 	*ptr++ = strndup(env->buffer + old_pos, pos - old_pos);
 	}
 	*ptr = NULL;
 	put_env(env);

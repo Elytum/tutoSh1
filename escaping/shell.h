@@ -29,6 +29,8 @@ typedef struct	s_env
 	
 	char		pwd[PATH_MAX];
 	char		home[PATH_MAX];
+	size_t		pwd_len;
+	size_t		home_len;
 }				t_env;
 
 #endif

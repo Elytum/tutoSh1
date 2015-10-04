@@ -9,9 +9,10 @@
 #define DOUBLE_QUOTED 4
 #define BACK_QUOTED 5
 #define BACKSLASHED 6
-#define LOCAL_VARIABLE 7
-#define TILDE 8
-#define REMOVE 9
+#define START_LOCAL_VARIABLE 7
+#define LOCAL_VARIABLE 8
+#define TILDE 9
+#define REMOVE 10
 
 void		launch_interprete(t_env *env);
 

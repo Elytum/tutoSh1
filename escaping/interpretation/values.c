@@ -2,7 +2,7 @@
 
 void		interprete_value(t_env *env)
 {
-	env->interprete[env->pos++] = REMOVE;
+	env->interprete[env->pos++] = START_LOCAL_VARIABLE;
 	while (env->buffer[env->pos] != '\'' && env->buffer[env->pos] != '\"' &&
 			env->buffer[env->pos] != '\\' && env->buffer[env->pos] != '`' &&
 			env->buffer[env->pos] != '$' && env->buffer[env->pos] != ' ' &&
@@ -12,15 +12,16 @@ void		interprete_value(t_env *env)
 
 void		process_value(t_env *env) // Actually just ignores it
 {
-	char	kind;
+	(void)env;
+	// char	kind;
 
-	env->pos = 0;
-	kind = INTERPRETED;
-	while (env->pos <= env->len)
-	{
-		if (env->interprete[env->pos] == LOCAL_VARIABLE)
-			env->interprete[env->pos] = kind;
-		kind = env->interprete[env->pos];
-		++env->pos;
-	}
+	// env->pos = 0;
+	// kind = INTERPRETED;
+	// while (env->pos <= env->len)
+	// {
+	// 	if (env->interprete[env->pos] == LOCAL_VARIABLE)
+	// 		env->interprete[env->pos] = kind;
+	// 	kind = env->interprete[env->pos];
+	// 	++env->pos;
+	// }
 }

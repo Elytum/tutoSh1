@@ -7,15 +7,16 @@ void		interprete_tilde(t_env *env)
 
 void		process_tilde(t_env *env) // Actually just ignores it
 {
-	char	kind;
+	(void)env;
+	// char	kind;
 
-	env->pos = 0;
-	kind = INTERPRETED;
-	while (env->pos <= env->len)
-	{
-		if (env->interprete[env->pos] == TILDE)
-			env->interprete[env->pos] = kind;
-		kind = env->interprete[env->pos];
-		++env->pos;
-	}
+	// env->pos = 0;
+	// kind = INTERPRETED;
+	// while (env->pos <= env->len)
+	// {
+	// 	if (env->interprete[env->pos] == TILDE)
+	// 		env->interprete[env->pos] = kind;
+	// 	kind = env->interprete[env->pos];
+	// 	++env->pos;
+	// }
 }

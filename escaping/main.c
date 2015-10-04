@@ -17,13 +17,16 @@ t_env		*init_env(void)
 
 	memcpy(env->pwd, "/tmp/tutoSh1/escaping", sizeof(env->pwd) - 1);
 	memcpy(env->home, "/Users/isabelle", sizeof(env->home) - 1);
+
+	env->pwd_len = strlen(env->pwd);
+	env->home_len = strlen(env->home);
 	
 	return (env);
 }
 
 void		add_local_variable(t_env *env, const char *key, const char *value)
 {
-	ht_set( env->local_variables, strdup(key), strdup(value));
+	ht_set(env->local_variables, strdup(key), strdup(value));
 }
 
 int			main(void)
