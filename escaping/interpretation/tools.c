@@ -1,6 +1,8 @@
 #include <interprete.h>
 #include <string.h>
 
+#include <stdio.h>
+
 void		do_interprete(t_env *env)
 {
 	env->pos = 0;
@@ -20,6 +22,8 @@ void		do_interprete(t_env *env)
 			interprete_tilde(env);
 		else if (env->buffer[env->pos] == ' ' || env->buffer[env->pos] == '\t')
 			interprete_spacing(env);
+		else if (env->buffer[env->pos] == '\0')
+			interprete_null(env);
 		else
 			interprete_normal(env);
 	}
@@ -29,8 +33,6 @@ void		do_interprete(t_env *env)
 void		do_process(t_env *env)
 {
 	process_back_quotes(env);
-	process_value(env);
-	process_tilde(env);
 }
 
 void		do_simplify(t_env *env)
@@ -55,6 +57,8 @@ void		do_simplify(t_env *env)
 			++env->pos;
 		}
 	}
+	while (env->interprete[env->len - 1] == SPACING)
+		--env->len;
 }
 
 int			set_arguments(t_env *env)
@@ -70,12 +74,14 @@ void		launch_interprete(t_env *env)
 
 	do_interprete(env);
 	if (env->interprete[env->len] != INTERPRETED && env->interprete[env->len] != SPACING)
+	{
+		printf("Line is not closed\n");
 		debug_env(env);
+	}
 	else
 	{
 		do_simplify(env);
 		do_process(env);
-		debug_env(env);
 		set_arguments(env);
 	}
 }

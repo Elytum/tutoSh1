@@ -1,22 +1,27 @@
 #include <interprete.h>
+#include <string.h>
+
+#include <stdio.h>
 
 void		interprete_tilde(t_env *env)
 {
-	env->interprete[env->pos++] = TILDE;
+	if ((env->pos == 0 || env->interprete[env->pos - 1] == SPACING) &&
+		(env->buffer[env->pos + 1] == ' ' ||
+		env->buffer[env->pos + 1] == '\t'))
+		env->interprete[env->pos] = TILDE;
+	else
+		env->interprete[env->pos] = INTERPRETED;
+	++env->pos;
 }
 
-void		process_tilde(t_env *env) // Actually just ignores it
-{
-	(void)env;
-	// char	kind;
+size_t		len_tilde(t_env *env, size_t *pos) {
+	++*pos;
+	return (env->home_len);
+}
 
-	// env->pos = 0;
-	// kind = INTERPRETED;
-	// while (env->pos <= env->len)
-	// {
-	// 	if (env->interprete[env->pos] == TILDE)
-	// 		env->interprete[env->pos] = kind;
-	// 	kind = env->interprete[env->pos];
-	// 	++env->pos;
-	// }
+void		extract_tilde(t_env *env, size_t *pos, char **ptr)
+{
+	memcpy(*ptr, env->home, env->home_len);
+	*ptr += env->home_len;
+	++*pos;
 }

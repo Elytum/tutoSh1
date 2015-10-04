@@ -16,3 +16,27 @@ void		interprete_double_quote(t_env *env)
 			env->interprete[env->pos++] = DOUBLE_QUOTED;
 	}
 }
+
+size_t		len_double_quote(t_env *env, size_t *pos)
+{
+	size_t	size;
+
+	size = 1;
+	++*pos;
+	while (*pos < env->len && env->interprete[*pos] == DOUBLE_QUOTED)
+	{
+		++size;
+		++*pos;
+	}
+	return (size);
+}
+
+void		extract_double_quote(t_env *env, size_t *pos, char **ptr)
+{
+	while (env->interprete[*pos] == DOUBLE_QUOTED)
+	{
+		**ptr = env->buffer[*pos];
+		++*ptr;
+		++*pos;
+	}
+}
