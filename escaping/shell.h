@@ -14,6 +14,8 @@
 # include <stdlib.h>
 # include <htable.h>
 
+# include <limits.h>
+
 typedef struct	s_env
 {
 	size_t		len;
@@ -24,6 +26,9 @@ typedef struct	s_env
 	int			argc;
 	char		**argv;
 	hashtable_t	*local_variables;
+	
+	char		pwd[PATH_MAX];
+	char		home[PATH_MAX];
 }				t_env;
 
 #endif

@@ -14,6 +14,10 @@ t_env		*init_env(void)
 	memcpy(env->line, STRING, LINE_SIZE - 1);
 	env->line[LINE_SIZE - 1] = '\0';
 	env->len = strlen(env->line);
+
+	memcpy(env->pwd, "/tmp/tutoSh1/escaping", sizeof(env->pwd) - 1);
+	memcpy(env->home, "/Users/isabelle", sizeof(env->home) - 1);
+	
 	return (env);
 }
 
