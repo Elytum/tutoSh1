@@ -176,9 +176,41 @@ void		process_back_quotes(t_env *env) // Actually just ignores it
 	}
 }
 
+void		process_value(t_env *env) // Actually just ignores it
+{
+	char	kind;
+
+	env->pos = 0;
+	kind = INTERPRETED;
+	while (env->pos <= env->len)
+	{
+		if (env->interprete[env->pos] == LOCAL_VARIABLE)
+			env->interprete[env->pos] = kind;
+		kind = env->interprete[env->pos];
+		++env->pos;
+	}
+}
+
+void		process_tilde(t_env *env) // Actually just ignores it
+{
+	char	kind;
+
+	env->pos = 0;
+	kind = INTERPRETED;
+	while (env->pos <= env->len)
+	{
+		if (env->interprete[env->pos] == TILDE)
+			env->interprete[env->pos] = kind;
+		kind = env->interprete[env->pos];
+		++env->pos;
+	}
+}
+
 void		do_process(t_env *env)
 {
 	process_back_quotes(env);
+	process_value(env);
+	process_tilde(env);
 }
 
 void		do_simplify(t_env *env)

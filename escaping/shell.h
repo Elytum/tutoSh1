@@ -6,6 +6,9 @@
 #define TRUE 0
 #define FALSE 1
 
+#define NORMAL_EXIT 0
+#define ERROR_EXIT -1
+
 # define LINE_SIZE 4096
 
 # include <stdlib.h>

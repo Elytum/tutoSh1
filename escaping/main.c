@@ -2,7 +2,7 @@
 #include <interprete.h>
 #include <string.h>
 
-# define STRING "  $lol 'TEST_SIZE$lolt' "
+# define STRING "  $lol ~ 'TEST_SIZE$lolt' "
 
 t_env		*init_env(void)
 {
@@ -17,12 +17,18 @@ t_env		*init_env(void)
 	return (env);
 }
 
+void		add_local_variable(t_env *env, const char *key, const char *value)
+{
+	ht_set( env->local_variables, strdup(key), strdup(value));
+}
+
 int			main(void)
 {
 	t_env	*env;
 
 	if ((env = init_env()) == ERROR)
-		return (-1);
+		return (ERROR_EXIT);
+	add_local_variable(env, "lol", "lilol");
 	launch_interprete(env);
-	return (0);
+	return (NORMAL_EXIT);
 }
