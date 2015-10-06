@@ -2,7 +2,7 @@
 #include <interprete.h>
 #include <string.h>
 
-#define STRING "$lol ~ ~~ ~$lol$lol $LOL $lol$LOL"
+#define STRING "testing \"begin \\$lol end\" "
 
 t_env		*init_env(void)
 {
