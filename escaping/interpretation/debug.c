@@ -50,7 +50,12 @@ void		put_env(t_env *env)
 	printf("Argc: %i\n", env->argc);
 	printf("Argv:\n");
 	id = 0;
-	while (id < env->argc)
+	// while (id < env->argc)
+	// {
+	// 	printf("\t%lu: [%s]\n", id, env->argv[id]);
+	// 	++id;
+	// }
+	while (env->argv[id])
 	{
 		printf("\t%lu: [%s]\n", id, env->argv[id]);
 		++id;

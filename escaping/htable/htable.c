@@ -53,7 +53,7 @@ entry_t *ht_newpair( char *key, void *value ) {
 		return NULL;
 	}
 
-	if( ( newpair->key = strdup( key ) ) == NULL ) {
+	if( ( newpair->key = key ) == NULL ) {
 		return NULL;
 	}
 
