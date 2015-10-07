@@ -9,9 +9,9 @@
 // #define STRING "ls \"~\" -la ./ / ~ $HOME $PWD"
 // #define STRING "ls \"-la\""
 // #define STRING "ls \"-la\" ; echo 'lol'"
-// #define STRING "$HOME $PATH $PWD"
+#define STRING "\"$HOME\" \"$PATH\" \"$PWD\""
 // #define STRING "lol$lol"
-#define STRING "ls -la ; echo '$PATH' & echo \"$PATH\" || ls && pwd"
+// #define STRING "ls -la ; echo \"$PATH\" & echo \"$PATH\" || ls && pwd"
 
 t_env		*init_env(void)
 {
