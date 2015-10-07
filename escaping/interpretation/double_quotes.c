@@ -3,10 +3,8 @@
 
 void		interprete_double_quote(t_env *env)
 {
-	char			simple;
 	const size_t	old_pos = env->pos + 1;
 
-	simple = 1;
 	env->interprete[env->pos++] = REMOVE;
 	while (env->pos <= env->len)
 	{
@@ -16,30 +14,19 @@ void		interprete_double_quote(t_env *env)
 			break ;
 		}
 		else if (env->buffer[env->pos] == '`')
-		{
-			simple = 0;
 			interprete_back_quote(env);
-		}
 		else if (env->buffer[env->pos] == '$')
-		{
-			simple = 0;
 			interprete_value(env);
-		}
 		else if (env->pos < env->len &&
 			env->buffer[env->pos] == '\\' &&
 			(env->buffer[env->pos + 1] == '$' ||
 			env->buffer[env->pos + 1] == '`' ||
 			env->buffer[env->pos + 1] == '"' ||
 			env->buffer[env->pos + 1] == '\n'))
-		{
-			simple = 0;
 			interprete_backslash(env);
-		}
 		else
-			env->interprete[env->pos++] = DOUBLE_QUOTED;
+			env->interprete[env->pos++] = INTERPRETED;
 	}
-	if (simple)
-		memset(env->interprete + old_pos, INTERPRETED, env->pos - old_pos - 1);
 }
 
 size_t		len_double_quote(t_env *env, size_t *pos)

@@ -82,6 +82,7 @@ void		launch_interprete(t_env *env)
 	{
 		do_simplify(env);
 		do_process(env);
+		debug_env(env);
 		set_arguments(env);
 	}
 }

@@ -27,12 +27,25 @@ void			set_argc(t_env *env)
 
 int			avoid_allocation(t_env *env, size_t *pos, char ***ptr)
 {
-	size_t		saved_pos = *pos;
+	size_t		saved_pos;
+	char		tmp_char;
 
-	if (env->interprete[saved_pos] == TILDE)
+	saved_pos = *pos;
+	if (env->interprete[*pos] == TILDE)
 	{
 		**ptr = env->home;
 		++*pos;
+	}
+	else if (env->interprete[saved_pos + 1] == ALONE_LOCAL_VARIABLE)
+	{
+		++saved_pos;
+		while (env->interprete[saved_pos] == ALONE_LOCAL_VARIABLE)
+			++saved_pos;
+		tmp_char = env->buffer[saved_pos];
+		env->buffer[saved_pos] = '\0';
+		**ptr = ht_get(env->local_variables, env->buffer + *pos + 1);
+		env->buffer[saved_pos] = tmp_char;
+		*pos = saved_pos;
 	}
 	else
 	{
@@ -72,8 +85,6 @@ size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 			len += len_backslash(env, pos);
 		else if (env->interprete[*pos] == START_LOCAL_VARIABLE)
 			len += len_value(env, pos);
-		else if (env->interprete[*pos] == TILDE)
-			len += len_tilde(env, pos);
 	}
 	return len;
 }
@@ -94,8 +105,6 @@ void		extract_content(t_env *env, size_t pos, char *ptr)
 			extract_backslash(env, &pos, &ptr);
 		else if (env->interprete[pos] == START_LOCAL_VARIABLE)
 			extract_value(env, &pos, &ptr);
-		else if (env->interprete[pos] == TILDE)
-			extract_tilde(env, &pos, &ptr);
 	}
 	*ptr = '\0';
 }

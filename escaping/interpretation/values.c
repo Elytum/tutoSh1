@@ -5,18 +5,19 @@ void		interprete_value(t_env *env)
 {
 	size_t	newpos;
 
-	newpos = env->pos + 1;
-	env->interprete[newpos] = START_LOCAL_VARIABLE;
+	newpos = env->pos;
+	env->interprete[newpos++] = START_LOCAL_VARIABLE;
 	while (env->buffer[newpos] != '\'' && env->buffer[newpos] != '\"' &&
 			env->buffer[newpos] != '\\' && env->buffer[newpos] != '`' &&
 			env->buffer[newpos] != '$' && env->buffer[newpos] != ' ' &&
 			env->buffer[newpos] != '\t' && env->buffer[newpos] != '\0')
 		newpos++;
 	if ((env->pos == 0 || env->interprete[env->pos - 1] == SPACING) &&
-		(env->buffer[newpos] == ' ' || env->buffer[newpos] == '\t'))
-		memcpy(env->interprete + env->len, LOCAL_VARIABLE, newpos - env->len);
+		(env->buffer[newpos] == ' ' || env->buffer[newpos] == '\t' ||
+		env->buffer[newpos] == '\0'))
+		memset(env->interprete + env->pos + 1, ALONE_LOCAL_VARIABLE, newpos - env->pos);
 	else
-		memcpy(env->interprete + env->len, ALONE_LOCAL_VARIABLE, newpos - env->len);
+		memset(env->interprete + env->pos + 1, LOCAL_VARIABLE, newpos - env->pos);
 	env->pos = newpos;
 }
 

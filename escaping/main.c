@@ -6,8 +6,9 @@
 
 // #define STRING "testing~ ~ \"begin ~lol end\" 'simple' \"double\""
 // #define STRING "testing~ ~ \"begin ~$lol end\" 'simple' \"double\""
-// #define STRING "ls -la ./ / ~"
-#define STRING "$HOME $PATH $PWD"
+// #define STRING "ls \"~\" -la ./ / ~"
+// #define STRING "$HOME $PATH $PWD"
+#define STRING "lol$lol"
 
 t_env		*init_env(void)
 {

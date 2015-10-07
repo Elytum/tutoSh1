@@ -15,14 +15,14 @@ void		interprete_tilde(t_env *env)
 	++env->pos;
 }
 
-size_t		len_tilde(t_env *env, size_t *pos) {
-	++*pos;
-	return (env->home_len);
-}
+// size_t		len_tilde(t_env *env, size_t *pos) {
+// 	++*pos;
+// 	return (env->home_len);
+// }
 
-void		extract_tilde(t_env *env, size_t *pos, char **ptr)
-{
-	memcpy(*ptr, env->home, env->home_len);
-	*ptr += env->home_len;
-	++*pos;
-}
+// void		extract_tilde(t_env *env, size_t *pos, char **ptr)
+// {
+// 	memcpy(*ptr, env->home, env->home_len);
+// 	*ptr += env->home_len;
+// 	++*pos;
+// }

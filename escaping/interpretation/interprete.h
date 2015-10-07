@@ -46,7 +46,7 @@ size_t		len_double_quote(t_env *env, size_t *pos);
 size_t		len_back_quote(t_env *env, size_t *pos);
 size_t		len_backslash(t_env *env, size_t *pos);
 size_t		len_value(t_env *env, size_t *pos);
-size_t		len_tilde(t_env *env, size_t *pos);
+// size_t		len_tilde(t_env *env, size_t *pos);
 
 void		extract_normal(t_env *env, size_t *pos, char **ptr);
 void		extract_simple_quote(t_env *env, size_t *pos, char **ptr);
@@ -54,7 +54,7 @@ void		extract_double_quote(t_env *env, size_t *pos, char **ptr);
 void		extract_back_quote(t_env *env, size_t *pos, char **ptr);
 void		extract_backslash(t_env *env, size_t *pos, char **ptr);
 void		extract_value(t_env *env, size_t *pos, char **ptr);
-void		extract_tilde(t_env *env, size_t *pos, char **ptr);
+// void		extract_tilde(t_env *env, size_t *pos, char **ptr);
 
 void		add_local_variable(t_env *env, const char *key, const char *value);
 
