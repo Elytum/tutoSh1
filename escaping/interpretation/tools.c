@@ -5,7 +5,7 @@
 
 void		do_interprete(t_env *env)
 {
-	env->pos = 0;
+	env->pos = env->start;
 	while (env->pos <= env->len)
 	{
 		if (env->buffer[env->pos] == '\'')
@@ -24,6 +24,12 @@ void		do_interprete(t_env *env)
 			interprete_spacing(env);
 		else if (env->buffer[env->pos] == '\0')
 			interprete_null(env);
+		else if (env->buffer[env->pos] == ';')
+			interprete_comma(env);
+		else if (env->buffer[env->pos] == '&')
+			interprete_background(env);
+		else if (env->buffer[env->pos] == '|')
+			interprete_pipe(env);
 		else
 			interprete_normal(env);
 	}
@@ -41,7 +47,7 @@ void		do_simplify(t_env *env)
 	const size_t	len = env->len;
 
 	buffer_pos = 0;
-	env->pos = 0;
+	env->pos = env->start;
 	while (env->pos <= len)
 	{
 		if (env->interprete[env->pos] == REMOVE)
@@ -67,22 +73,26 @@ int			set_arguments(t_env *env)
 	return (set_argv(env));
 }
 
-void		launch_interprete(t_env *env)
+char		start_interprete(t_env *env)
 {
+	if (env->len == 0)
+		return (STOP);
+	env->start = 0;
 	memcpy(env->buffer, env->line, env->len + 1);
 	memset(env->interprete, '\0', env->len + 1);
 
 	do_interprete(env);
 	if (env->interprete[env->len] != INTERPRETED && env->interprete[env->len] != SPACING)
-	{
-		printf("Line is not closed\n");
-		debug_env(env);
-	}
-	else
-	{
-		do_simplify(env);
-		do_process(env);
-		debug_env(env);
-		set_arguments(env);
-	}
+		return (NOT_CLOSED);
+	do_simplify(env);
+	do_process(env);
+	return (CONTINUE);
+}
+
+char		launch_interprete(t_env *env)
+{
+	set_arguments(env);
+	if (env->len < env->start -1)
+		return (STOP);
+	return (CONTINUE);
 }

@@ -9,9 +9,9 @@ void			set_argc(t_env *env)
 	size_t	pos;
 
 	env->argc = 0;
-	pos = 0;
+	pos = env->start;
 	in_word = FALSE;
-	while (pos < env->len)
+	while (pos < env->len && env->interprete[pos] != DELIMITER)
 	{
 		if (env->interprete[pos] == SPACING)
 				in_word = FALSE;
@@ -71,7 +71,8 @@ size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 	if (avoid_allocation(env, pos, ptr))
 		return (0);
 	len = 0;
-	while (*pos < env->len && env->interprete[*pos] != SPACING)
+	while (*pos < env->len && env->interprete[*pos] != SPACING &&
+		env->interprete[*pos] != DELIMITER)
 	{
 		if (env->interprete[*pos] == INTERPRETED)
 			len += len_normal(env, pos);
@@ -91,7 +92,8 @@ size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 
 void		extract_content(t_env *env, size_t pos, char *ptr)
 {
-	while (pos < env->len && env->interprete[pos] != SPACING)
+	while (pos < env->len && env->interprete[pos] != SPACING &&
+		env->interprete[env->pos] != DELIMITER)
 	{
 		if (env->interprete[pos] == INTERPRETED)
 			extract_normal(env, &pos, &ptr);
@@ -118,8 +120,8 @@ int			set_argv(t_env *env)
 
 	ptr = env->argv;
 	env->error = NO_ERROR;
-	pos = 0;
-	while (pos < env->len)
+	pos = env->start;
+	while (pos < env->len && env->interprete[pos] != DELIMITER)
 	{
 		while (pos < env->len && env->interprete[pos] == SPACING)
 			++pos;
@@ -141,5 +143,6 @@ int			set_argv(t_env *env)
 			return (ERROR);
 	}
 	*ptr = NULL;
+	env->start = pos + 1;
 	return (NO_ERROR);
 }

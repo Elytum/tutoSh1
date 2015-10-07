@@ -18,6 +18,7 @@ typedef struct	s_env
 {
 	size_t		len;
 	size_t		pos;
+	size_t		start;
 	char		line[_POSIX2_LINE_MAX];
 	char		buffer[_POSIX2_LINE_MAX];
 	char		interprete[_POSIX2_LINE_MAX];
@@ -34,6 +35,8 @@ typedef struct	s_env
 	size_t		argv_pool_size;
 
 	char		error;
+	char		last_token;
+	char		pursue;
 }				t_env;
 
 #endif

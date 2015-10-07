@@ -7,9 +7,11 @@
 // #define STRING "testing~ ~ \"begin ~lol end\" 'simple' \"double\""
 // #define STRING "testing~ ~ \"begin ~$lol end\" 'simple' \"double\""
 // #define STRING "ls \"~\" -la ./ / ~ $HOME $PWD"
-#define STRING "ls \"-la\""
+// #define STRING "ls \"-la\""
+// #define STRING "ls \"-la\" ; echo 'lol'"
 // #define STRING "$HOME $PATH $PWD"
 // #define STRING "lol$lol"
+#define STRING "ls -la ; echo '$PATH' & echo \"$PATH\" || ls && pwd"
 
 t_env		*init_env(void)
 {
@@ -34,13 +36,13 @@ t_env		*init_env(void)
 
 void		free_argv(t_env *env)
 {
-	size_t	pos;
+	size_t	id;
 
-	pos = 0;
-	while (pos < env->argv_pool_size)
+	id = 0;
+	while (id < env->argv_pool_size)
 	{
-		printf("Free of [%s]\n", env->argv_pool[pos]);
-		free(env->argv_pool[pos++]);
+		printf("Free of [%s]\n", env->argv_pool[id]);
+		free(env->argv_pool[id++]);
 	}
 	env->argv_pool_size = 0;
 }
@@ -65,12 +67,12 @@ int			main(void)
 	add_local_variable(env, "HOME", "/nfs/zfs-student-3/users/2014/achazal");
 	add_local_variable(env, "PWD", "/nfs/zfs-student-3/users/2014/achazal/tutoSh1/escaping");
 	add_local_variable(env, "PATH", "/nfs/zfs-student-3/users/2014/achazal/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin");
-	launch_interprete(env);
-	put_env(env);
-	free_argv(env);
-
-	// free(env);
-	// while (42)
-	// 	;
+	
+	start_interprete(env);
+	while (launch_interprete(env) == CONTINUE)
+	{
+		put_env(env);
+		free_argv(env);
+	}
 	return (NORMAL_EXIT);
 }

@@ -19,7 +19,7 @@ void		process_back_quotes(t_env *env) // Actually just ignores it
 {
 	char	kind;
 
-	env->pos = 0;
+	env->pos = env->start;
 	kind = INTERPRETED;
 	while (env->pos <= env->len)
 	{
