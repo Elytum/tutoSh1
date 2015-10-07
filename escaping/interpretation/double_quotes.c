@@ -39,7 +39,7 @@ void		interprete_double_quote(t_env *env)
 			env->interprete[env->pos++] = DOUBLE_QUOTED;
 	}
 	if (simple)
-		memset(env->interprete + old_pos, INTERPRETED, env->pos);
+		memset(env->interprete + old_pos, INTERPRETED, env->pos - old_pos - 1);
 }
 
 size_t		len_double_quote(t_env *env, size_t *pos)

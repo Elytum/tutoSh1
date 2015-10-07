@@ -4,8 +4,8 @@
 
 #include <stdio.h>
 
-// #define STRING "testing~ ~ \"begin ~$lol end\" 'simple' \"double\""
-#define STRING "ls -la ./ / ~"
+#define STRING "testing~ ~ \"begin ~lol end\" 'simple' \"double\""
+// #define STRING "ls -la ./ / ~"
 
 t_env		*init_env(void)
 {
