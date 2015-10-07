@@ -3,12 +3,21 @@
 
 void		interprete_value(t_env *env)
 {
-	env->interprete[env->pos++] = START_LOCAL_VARIABLE;
-	while (env->buffer[env->pos] != '\'' && env->buffer[env->pos] != '\"' &&
-			env->buffer[env->pos] != '\\' && env->buffer[env->pos] != '`' &&
-			env->buffer[env->pos] != '$' && env->buffer[env->pos] != ' ' &&
-			env->buffer[env->pos] != '\t' && env->buffer[env->pos] != '\0')
-		env->interprete[env->pos++] = LOCAL_VARIABLE;
+	size_t	newpos;
+
+	newpos = env->pos + 1;
+	env->interprete[newpos] = START_LOCAL_VARIABLE;
+	while (env->buffer[newpos] != '\'' && env->buffer[newpos] != '\"' &&
+			env->buffer[newpos] != '\\' && env->buffer[newpos] != '`' &&
+			env->buffer[newpos] != '$' && env->buffer[newpos] != ' ' &&
+			env->buffer[newpos] != '\t' && env->buffer[newpos] != '\0')
+		newpos++;
+	if ((env->pos == 0 || env->interprete[env->pos - 1] == SPACING) &&
+		(env->buffer[newpos] == ' ' || env->buffer[newpos] == '\t'))
+		memcpy(env->interprete + env->len, LOCAL_VARIABLE, newpos - env->len);
+	else
+		memcpy(env->interprete + env->len, ALONE_LOCAL_VARIABLE, newpos - env->len);
+	env->pos = newpos;
 }
 
 size_t		len_value(t_env *env, size_t *pos)

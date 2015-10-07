@@ -11,8 +11,9 @@
 #define BACKSLASHED 6
 #define START_LOCAL_VARIABLE 7
 #define LOCAL_VARIABLE 8
-#define TILDE 9
-#define REMOVE 10
+#define ALONE_LOCAL_VARIABLE 9
+#define TILDE 10
+#define REMOVE 11
 
 void		launch_interprete(t_env *env);
 

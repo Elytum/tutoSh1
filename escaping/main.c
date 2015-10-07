@@ -4,8 +4,10 @@
 
 #include <stdio.h>
 
-#define STRING "testing~ ~ \"begin ~lol end\" 'simple' \"double\""
+// #define STRING "testing~ ~ \"begin ~lol end\" 'simple' \"double\""
+// #define STRING "testing~ ~ \"begin ~$lol end\" 'simple' \"double\""
 // #define STRING "ls -la ./ / ~"
+#define STRING "$HOME $PATH $PWD"
 
 t_env		*init_env(void)
 {
@@ -59,6 +61,9 @@ int			main(void)
 	if ((env = init_env()) == ERROR)
 		return (ERROR_EXIT);
 	add_local_variable(env, "lol", "42");
+	add_local_variable(env, "HOME", "/nfs/zfs-student-3/users/2014/achazal");
+	add_local_variable(env, "PWD", "/nfs/zfs-student-3/users/2014/achazal/tutoSh1/escaping");
+	add_local_variable(env, "PATH", "/nfs/zfs-student-3/users/2014/achazal/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin");
 	launch_interprete(env);
 	put_env(env);
 	free_argv(env);
