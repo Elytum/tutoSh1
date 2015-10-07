@@ -57,4 +57,6 @@ void		extract_tilde(t_env *env, size_t *pos, char **ptr);
 
 void		add_local_variable(t_env *env, const char *key, const char *value);
 
+void		*debug_malloc(size_t size);
+
 #endif

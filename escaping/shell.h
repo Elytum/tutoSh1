@@ -9,8 +9,6 @@
 #define NORMAL_EXIT 0
 #define ERROR_EXIT -1
 
-# define LINE_SIZE 4096
-
 # include <stdlib.h>
 # include <htable.h>
 
@@ -20,17 +18,22 @@ typedef struct	s_env
 {
 	size_t		len;
 	size_t		pos;
-	char		line[LINE_SIZE];
-	char		buffer[LINE_SIZE];
-	char		interprete[LINE_SIZE];
+	char		line[_POSIX2_LINE_MAX];
+	char		buffer[_POSIX2_LINE_MAX];
+	char		interprete[_POSIX2_LINE_MAX];
 	int			argc;
-	char		**argv;
+	char		*argv[_POSIX_ARG_MAX];
 	hashtable_t	*local_variables;
 	
-	char		pwd[PATH_MAX];
-	char		home[PATH_MAX];
+	char		pwd[_POSIX_PATH_MAX];
+	char		home[_POSIX_PATH_MAX];
 	size_t		pwd_len;
 	size_t		home_len;
+
+	char		*argv_pool[_POSIX_ARG_MAX];
+	size_t		argv_pool_size;
+
+	char		error;
 }				t_env;
 
 #endif

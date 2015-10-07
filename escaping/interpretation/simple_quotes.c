@@ -11,7 +11,7 @@ void		interprete_simple_quote(t_env *env)
 			return ;
 		}
 		else
-			env->interprete[env->pos++] = SIMPLE_QUOTED;
+			env->interprete[env->pos++] = INTERPRETED;
 	}
 }
 

@@ -25,10 +25,38 @@ void			set_argc(t_env *env)
 	}
 }
 
-size_t		extract_len(t_env *env, size_t *pos)
+int			avoid_allocation(t_env *env, size_t *pos, char ***ptr)
+{
+	size_t		saved_pos = *pos;
+
+	if (env->interprete[saved_pos] == TILDE)
+	{
+		**ptr = env->home;
+		++*pos;
+	}
+	else
+	{
+		while (saved_pos < env->len && env->interprete[saved_pos] != SPACING)
+		{
+			if (env->interprete[saved_pos] != INTERPRETED)
+				return (0);
+			++saved_pos;
+		}
+		**ptr = env->buffer + *pos;
+		*pos = saved_pos;
+		env->buffer[saved_pos] = '\0';
+	}
+	++*ptr;
+	++env->argc;
+	return (1);
+}
+
+size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 {
 	size_t	len;
 
+	if (avoid_allocation(env, pos, ptr))
+		return (0);
 	len = 0;
 	while (*pos < env->len && env->interprete[*pos] != SPACING)
 	{
@@ -79,24 +107,29 @@ int			set_argv(t_env *env)
 	size_t	len;
 	char	**ptr;
 
-	if (!(env->argv = (char **)malloc(sizeof(char *) * (env->argc + 1))))
-		return (ERROR);
 	ptr = env->argv;
+	env->error = NO_ERROR;
 	pos = 0;
 	while (pos < env->len)
 	{
 		while (pos < env->len && env->interprete[pos] == SPACING)
 			++pos;
 		tmp_pos = pos;
-		if ((len = extract_len(env, &pos)))
+		if ((len = should_len(env, &pos, &ptr)))
 		{
-			if (!(*ptr = (char *)malloc(sizeof(char) * (len + 1))))
+			if (!(*ptr = (char *)debug_malloc(sizeof(char) * (len + 1))))
 				return (ERROR);
+			if (env->argv_pool_size < _POSIX_ARG_MAX)
+				env->argv_pool[env->argv_pool_size++] = *ptr;
+			else
+				env->error = ERROR;
 			extract_content(env, tmp_pos, *ptr);
 			++ptr;
 		}
 		else
 			--env->argc;
+		if (env->error == ERROR)
+			return (ERROR);
 	}
 	*ptr = NULL;
 	return (NO_ERROR);
