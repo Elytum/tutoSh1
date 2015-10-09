@@ -16,6 +16,8 @@ int			set_arguments(t_env *env);
 void		do_interprete(t_env *env);
 void		interprete_simple_quote(t_env *env);
 void		interprete_double_quote(t_env *env);
+void		interprete_double_quote_normal(t_env *env);
+void		interprete_double_quote_stop(t_env *env);
 void		interprete_back_quote(t_env *env);
 void		interprete_value(t_env *env);
 void		interprete_backslash(t_env *env);

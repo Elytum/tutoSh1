@@ -41,6 +41,7 @@ typedef struct	s_env
 	char		last_char;
 
 	void		(*do_interprete_tab[256])(struct s_env *env);
+	char		interprete_double_quote_tab[256];
 	char		interprete_value_stop[256];
 	char		standard_delimiters[256];
 	char		spaces[256];

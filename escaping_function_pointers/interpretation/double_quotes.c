@@ -17,10 +17,7 @@ void		interprete_double_quote(t_env *env)
 			interprete_value(env);
 		else if (env->pos < env->len &&
 			env->buffer[env->pos] == '\\' &&
-			(env->buffer[env->pos + 1] == '$' ||
-			env->buffer[env->pos + 1] == '`' ||
-			env->buffer[env->pos + 1] == '"' ||
-			env->buffer[env->pos + 1] == '\n'))
+			(env->interprete_double_quote_tab[(int)env->buffer[env->pos + 1]]))
 			interprete_backslash(env);
 		else
 			env->interprete[env->pos++] = INTERPRETED;

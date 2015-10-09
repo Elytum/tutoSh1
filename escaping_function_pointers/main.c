@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-// #define STRING "testing~ ~ \"begin ~lol end\" 'simple' \"double\""
+#define STRING "testing~ ~ \"begin ~ end\" 'simple' \"double\""
 // #define STRING "exit \"-2000\" lol"
 // #define STRING "testing~ ~ \"begin ~$lol end\" 'simple' \"double\""
 // #define STRING "ls \"~\" -la ./ / ~ $HOME $PWD"
@@ -13,7 +13,7 @@
 // #define STRING "$PWD ; \"lol\";"
 // #define STRING "; $l"
 // #define STRING "HOME$HOME"
-#define STRING "ls -la ; echo \"$PATH\" & echo \"$PATH\" || ls && pwd"
+// #define STRING "ls -la ; echo \"$PATH\" & echo \"$PATH\" || ls && pwd"
 
 // #define STRING "Line not closed with backslash \\"
 // #define STRING "Line not closed with simple quotes \""
@@ -22,96 +22,88 @@
 
 void		init_do_interprete_tab(t_env *env)
 {
-	void		(**do_interprete_tab)(struct s_env *env);
 	unsigned int i;
 
-	do_interprete_tab = env->do_interprete_tab;
 	i = 0;
 	while (i < sizeof(env->do_interprete_tab))
-		do_interprete_tab[i++] = &interprete_normal;
-	do_interprete_tab['\''] = &interprete_simple_quote;
-	do_interprete_tab['\"'] = &interprete_double_quote;
-	do_interprete_tab['\\'] = &interprete_backslash;
-	do_interprete_tab['`'] = &interprete_back_quote;
-	do_interprete_tab['$'] = &interprete_value;
-	do_interprete_tab['~'] = &interprete_tilde;
-	do_interprete_tab[' ' ] = &interprete_spacing;
-	do_interprete_tab['\t'] = &interprete_spacing;
-	do_interprete_tab['\0'] = &interprete_null;
-	do_interprete_tab[';'] = &interprete_comma;
-	do_interprete_tab['&'] = &interprete_background;
-	do_interprete_tab['|'] =  &interprete_pipe;
+		env->do_interprete_tab[i++] = &interprete_normal;
+	env->do_interprete_tab['\''] = &interprete_simple_quote;
+	env->do_interprete_tab['\"'] = &interprete_double_quote;
+	env->do_interprete_tab['\\'] = &interprete_backslash;
+	env->do_interprete_tab['`'] = &interprete_back_quote;
+	env->do_interprete_tab['$'] = &interprete_value;
+	env->do_interprete_tab['~'] = &interprete_tilde;
+	env->do_interprete_tab[' ' ] = &interprete_spacing;
+	env->do_interprete_tab['\t'] = &interprete_spacing;
+	env->do_interprete_tab['\0'] = &interprete_null;
+	env->do_interprete_tab[';'] = &interprete_comma;
+	env->do_interprete_tab['&'] = &interprete_background;
+	env->do_interprete_tab['|'] =  &interprete_pipe;
 
 }
 
 void		init_interprete_value_stop(t_env *env)
 {
-	char		*interprete_value_stop;
-
-	interprete_value_stop = env->interprete_value_stop;
-	memset(interprete_value_stop, 1, sizeof(env->interprete_value_stop));
-	interprete_value_stop['\''] = 0;
-	interprete_value_stop['\"'] = 0;
-	interprete_value_stop['\\'] = 0;
-	interprete_value_stop['`'] = 0;
-	interprete_value_stop['$'] = 0;
-	interprete_value_stop[' '] = 0;
-	interprete_value_stop['\t'] = 0;
-	interprete_value_stop['\0'] = 0;
-	interprete_value_stop[';'] = 0;
-	interprete_value_stop['|'] = 0;
-	interprete_value_stop['&'] = 0;
+	memset(env->interprete_value_stop, 1, sizeof(env->interprete_value_stop));
+	env->interprete_value_stop['\''] = 0;
+	env->interprete_value_stop['\"'] = 0;
+	env->interprete_value_stop['\\'] = 0;
+	env->interprete_value_stop['`'] = 0;
+	env->interprete_value_stop['$'] = 0;
+	env->interprete_value_stop[' '] = 0;
+	env->interprete_value_stop['\t'] = 0;
+	env->interprete_value_stop['\0'] = 0;
+	env->interprete_value_stop[';'] = 0;
+	env->interprete_value_stop['|'] = 0;
+	env->interprete_value_stop['&'] = 0;
 }
 
 void		init_standard_delimiters(t_env *env)
 {
-	char	*standard_delimiters;
-
-	standard_delimiters = env->standard_delimiters;
-	memset(standard_delimiters, 0, sizeof(env->standard_delimiters));
-	standard_delimiters[' '] = 1;
-	standard_delimiters['\t'] = 1;
-	standard_delimiters['\0'] = 1;
-	standard_delimiters[';'] = 1;
-	standard_delimiters['|'] = 1;
-	standard_delimiters['&'] = 1;
+	memset(env->standard_delimiters, 0, sizeof(env->standard_delimiters));
+	env->standard_delimiters[' '] = 1;
+	env->standard_delimiters['\t'] = 1;
+	env->standard_delimiters['\0'] = 1;
+	env->standard_delimiters[';'] = 1;
+	env->standard_delimiters['|'] = 1;
+	env->standard_delimiters['&'] = 1;
 }
 
 void		init_spaces(t_env *env)
 {
-	char	*spaces;
-
-	spaces = env->spaces;
-	memset(spaces, 0, sizeof(env->spaces));
-	spaces[' '] = 1;
-	spaces['\t'] = 1;
-	spaces['\0'] = 1;
+	memset(env->spaces, 0, sizeof(env->spaces));
+	env->spaces[' '] = 1;
+	env->spaces['\t'] = 1;
+	env->spaces['\0'] = 1;
 }
 
 void		init_should_len_tab(t_env *env)
 {
-	size_t		(**should_len_tab)(struct s_env *env, size_t *pos);
-
-	should_len_tab = env->should_len_tab;
-	should_len_tab[INTERPRETED] = &len_normal;
-	should_len_tab[SIMPLE_QUOTED] = &len_simple_quote;
-	should_len_tab[DOUBLE_QUOTED] = &len_double_quote;
-	should_len_tab[BACK_QUOTED] = &len_back_quote;
-	should_len_tab[BACKSLASHED] = &len_backslash;
-	should_len_tab[START_LOCAL_VARIABLE] = &len_value;
+	env->should_len_tab[INTERPRETED] = &len_normal;
+	env->should_len_tab[SIMPLE_QUOTED] = &len_simple_quote;
+	env->should_len_tab[DOUBLE_QUOTED] = &len_double_quote;
+	env->should_len_tab[BACK_QUOTED] = &len_back_quote;
+	env->should_len_tab[BACKSLASHED] = &len_backslash;
+	env->should_len_tab[START_LOCAL_VARIABLE] = &len_value;
 }
 
 void		init_extract_content_tab(t_env *env)
 {
-	void		(**extract_content_tab)(struct s_env *env, size_t *pos, char **ptr);
+	env->extract_content_tab[INTERPRETED] = &extract_normal;
+	env->extract_content_tab[SIMPLE_QUOTED] = &extract_simple_quote;
+	env->extract_content_tab[DOUBLE_QUOTED] = &extract_double_quote;
+	env->extract_content_tab[BACK_QUOTED] = &extract_back_quote;
+	env->extract_content_tab[BACKSLASHED] = &extract_backslash;
+	env->extract_content_tab[START_LOCAL_VARIABLE] = &extract_value;
+}
 
-	extract_content_tab = env->extract_content_tab;
-	extract_content_tab[INTERPRETED] = &extract_normal;
-	extract_content_tab[SIMPLE_QUOTED] = &extract_simple_quote;
-	extract_content_tab[DOUBLE_QUOTED] = &extract_double_quote;
-	extract_content_tab[BACK_QUOTED] = &extract_back_quote;
-	extract_content_tab[BACKSLASHED] = &extract_backslash;
-	extract_content_tab[START_LOCAL_VARIABLE] = &extract_value;
+void		init_interprete_double_quote_tab(t_env *env)
+{
+	memset(env->interprete_double_quote_tab, 0, sizeof(env->interprete_double_quote_tab));
+	env->interprete_double_quote_tab['$'] = 1;
+	env->interprete_double_quote_tab['`'] = 1;
+	env->interprete_double_quote_tab['"'] = 1;
+	env->interprete_double_quote_tab['\n'] = 1;
 }
 
 t_env		*init_env(void)
