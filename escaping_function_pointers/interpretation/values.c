@@ -14,17 +14,10 @@ void		interprete_value(t_env *env)
 		return ;
 	}
 	env->interprete[newpos++] = START_LOCAL_VARIABLE;
-	while (env->buffer[newpos] != '\'' && env->buffer[newpos] != '\"' &&
-			env->buffer[newpos] != '\\' && env->buffer[newpos] != '`' &&
-			env->buffer[newpos] != '$' && env->buffer[newpos] != ' ' &&
-			env->buffer[newpos] != '\t' && env->buffer[newpos] != '\0' &&
-			env->buffer[newpos] != ';' && env->buffer[newpos] != '|' &&
-			env->buffer[newpos] != '&')
+	while (env->interprete_value_stop[(int)env->buffer[newpos]])
 		newpos++;
 	if ((env->pos == 0 || env->interprete[env->pos - 1] == SPACING) &&
-		(env->buffer[newpos] == ' ' || env->buffer[newpos] == '\t' ||
-		env->buffer[newpos] == '\0' || env->buffer[newpos] == ';' ||
-		env->buffer[newpos] == '|' || env->buffer[newpos] == '&'))
+		env->standard_delimiters[(int)env->buffer[newpos]])
 		memset(env->interprete + env->pos + 1, ALONE_LOCAL_VARIABLE, newpos - env->pos);
 	else
 		memset(env->interprete + env->pos + 1, LOCAL_VARIABLE, newpos - env->pos);

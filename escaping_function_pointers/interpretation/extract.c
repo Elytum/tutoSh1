@@ -1,5 +1,6 @@
 #include <interprete.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <stdio.h>
 
@@ -68,7 +69,9 @@ int			avoid_allocation(t_env *env, size_t *pos, char ***ptr)
 
 size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 {
-	size_t	len;
+	size_t		len;
+	char		c;
+	const char	error[] = "should_len id too big\n";
 
 	if (avoid_allocation(env, pos, ptr))
 		return (0);
@@ -76,18 +79,13 @@ size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 	while (*pos < env->len && env->interprete[*pos] != SPACING &&
 		env->interprete[*pos] != DELIMITER)
 	{
-		if (env->interprete[*pos] == INTERPRETED)
-			len += len_normal(env, pos);
-		else if (env->interprete[*pos] == SIMPLE_QUOTED)
-			len += len_simple_quote(env, pos);
-		else if (env->interprete[*pos] == DOUBLE_QUOTED)
-			len += len_double_quote(env, pos);
-		else if (env->interprete[*pos] == BACK_QUOTED)
-			len += len_back_quote(env, pos);
-		else if (env->interprete[*pos] == BACKSLASHED)
-			len += len_backslash(env, pos);
-		else if (env->interprete[*pos] == START_LOCAL_VARIABLE)
-			len += len_value(env, pos);
+		c = env->interprete[*pos];
+		if ((unsigned long)c >= sizeof(env->should_len_tab))
+		{
+			write(2, error, sizeof(error) - 1);
+			exit(0);
+		}
+		len += env->should_len_tab[(int)c](env, pos);
 	}
 	return len;
 }
