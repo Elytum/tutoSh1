@@ -55,6 +55,8 @@ int			avoid_allocation(t_env *env, size_t *pos, char ***ptr)
 				return (0);
 			++saved_pos;
 		}
+		if (env->interprete[saved_pos] == SPACING)
+			return (0);
 		**ptr = env->buffer + *pos;
 		*pos = saved_pos;
 		env->buffer[saved_pos] = '\0';
@@ -93,7 +95,7 @@ size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 void		extract_content(t_env *env, size_t pos, char *ptr)
 {
 	while (pos < env->len && env->interprete[pos] != SPACING &&
-		env->interprete[env->pos] != DELIMITER)
+		env->interprete[pos] != DELIMITER)
 	{
 		if (env->interprete[pos] == INTERPRETED)
 			extract_normal(env, &pos, &ptr);

@@ -9,7 +9,7 @@
 // #define STRING "ls \"~\" -la ./ / ~ $HOME $PWD"
 // #define STRING "ls \"-la\""
 // #define STRING "ls \"-la\" ; echo 'lol'"
-#define STRING "\"$HOME\" \"$PATH\" \"$PWD\""
+#define STRING "\"$HOME\" lol; $PATH \"$PWD\""
 // #define STRING "lol$lol"
 // #define STRING "ls -la ; echo \"$PATH\" & echo \"$PATH\" || ls && pwd"
 // #define STRING "Line not closed with backslash \\"
@@ -45,7 +45,7 @@ void		free_argv(t_env *env)
 	id = 0;
 	while (id < env->argv_pool_size)
 	{
-		printf("Free of [%s]\n", env->argv_pool[id]);
+			printf("Free of [%s]\n", env->argv_pool[id]);
 		free(env->argv_pool[id++]);
 	}
 	env->argv_pool_size = 0;
@@ -58,10 +58,12 @@ void		add_local_variable(t_env *env, const char *key, const char *value)
 
 void		*debug_malloc(size_t size)
 {
-	printf("\t\t<MALLOC>\n\t\tRequested a malloc of %lu\n\n", size);
+		printf("\t\t<MALLOC>\n\t\tRequested a malloc of %lu\n\n", size);
 	return (malloc(size));
 }
+
 #include <unistd.h>
+
 int			main(void)
 {
 	t_env	*env;
@@ -74,12 +76,12 @@ int			main(void)
 	
 	if (start_interprete(env) == NOT_CLOSED)
 	{
-		debug_env(env);
+		// debug_env(env);
 		write(1, "Line not closed\n", sizeof("Line not closed\n") - 1);
 	}
 	else
 	{
-		debug_env(env);
+		// debug_env(env);
 		while (launch_interprete(env) == CONTINUE)
 		{
 			put_env(env);

@@ -44,17 +44,11 @@ void		debug_env(t_env *env)
 
 void		put_env(t_env *env)
 {
-	char	**ptr;
 	size_t	id;
 
 	printf("Argc: %i\n", env->argc);
 	printf("Argv:\n");
 	id = 0;
-	// while (id < env->argc)
-	// {
-	// 	printf("\t%lu: [%s]\n", id, env->argv[id]);
-	// 	++id;
-	// }
 	while (env->argv[id])
 	{
 		printf("\t%lu: [%s]\n", id, env->argv[id]);

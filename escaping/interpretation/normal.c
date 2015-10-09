@@ -14,6 +14,7 @@ void		interprete_normal(t_env *env)
 
 size_t		len_normal(t_env *env, size_t *pos)
 {
+	(void)env;
 	++*pos;
 	return (1);
 }

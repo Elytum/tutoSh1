@@ -33,11 +33,13 @@ void		process_back_quotes(t_env *env) // Actually just ignores it
 
 size_t		len_back_quote(t_env *env, size_t *pos) // Implement once it can be
 {
+	(void)env;
 	++*pos;
 	return (0);
 }
 
 void		extract_back_quote(t_env *env, size_t *pos, char **ptr) // Implement once it can be
 {
+	(void)env;
 	**ptr++ = env->buffer[*pos++];
 }

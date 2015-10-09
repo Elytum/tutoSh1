@@ -3,8 +3,6 @@
 
 void		interprete_double_quote(t_env *env)
 {
-	const size_t	old_pos = env->pos + 1;
-
 	env->interprete[env->pos++] = REMOVE;
 	while (env->pos <= env->len)
 	{
