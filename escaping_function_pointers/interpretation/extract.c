@@ -6,17 +6,15 @@
 
 void			set_argc(t_env *env)
 {
-	const char		*ptr_interprete = env->interprete;
-	const size_t	len = env->len;
-	char			in_word;
-	size_t			pos;
+	char	in_word;
+	size_t	pos;
 
 	env->argc = 0;
 	pos = env->start;
 	in_word = FALSE;
-	while (pos < len && ptr_interprete[pos] != DELIMITER)
+	while (pos < env->len && env->interprete[pos] != DELIMITER)
 	{
-		if (ptr_interprete[pos] == SPACING)
+		if (env->interprete[pos] == SPACING)
 				in_word = FALSE;
 		else
 		{
@@ -30,21 +28,19 @@ void			set_argc(t_env *env)
 
 int			avoid_allocation(t_env *env, size_t *pos, char ***ptr)
 {
-	const char		*ptr_interprete = env->interprete;
-	const size_t	len = env->len;
-	size_t			saved_pos;
-	char			tmp_char;
+	size_t		saved_pos;
+	char		tmp_char;
 
 	saved_pos = *pos;
-	if (ptr_interprete[*pos] == TILDE)
+	if (env->interprete[*pos] == TILDE)
 	{
 		**ptr = env->home;
 		++*pos;
 	}
-	else if (ptr_interprete[saved_pos + 1] == ALONE_LOCAL_VARIABLE)
+	else if (env->interprete[saved_pos + 1] == ALONE_LOCAL_VARIABLE)
 	{
 		++saved_pos;
-		while (ptr_interprete[saved_pos] == ALONE_LOCAL_VARIABLE)
+		while (env->interprete[saved_pos] == ALONE_LOCAL_VARIABLE)
 			++saved_pos;
 		tmp_char = env->buffer[saved_pos];
 		env->buffer[saved_pos] = '\0';
@@ -54,13 +50,13 @@ int			avoid_allocation(t_env *env, size_t *pos, char ***ptr)
 	}
 	else
 	{
-		while (saved_pos < len && ptr_interprete[saved_pos] != SPACING)
+		while (saved_pos < env->len && env->interprete[saved_pos] != SPACING)
 		{
-			if (ptr_interprete[saved_pos] != INTERPRETED)
+			if (env->interprete[saved_pos] != INTERPRETED)
 				return (0);
 			++saved_pos;
 		}
-		if (ptr_interprete[saved_pos] != SPACING && ptr_interprete[saved_pos] != INTERPRETED)
+		if (env->interprete[saved_pos] != SPACING && env->interprete[saved_pos] != INTERPRETED)
 			return (0);
 		**ptr = env->buffer + *pos;
 		*pos = saved_pos;
@@ -73,18 +69,17 @@ int			avoid_allocation(t_env *env, size_t *pos, char ***ptr)
 
 size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 {
-	const char	error[] = "should_len id too big\n";
-	const char	*ptr_interprete = env->interprete;
 	size_t		len;
 	char		c;
+	const char	error[] = "should_len id too big\n";
 
 	if (avoid_allocation(env, pos, ptr))
 		return (0);
 	len = 0;
-	while (*pos < len && ptr_interprete[*pos] != SPACING &&
-		ptr_interprete[*pos] != DELIMITER)
+	while (*pos < env->len && env->interprete[*pos] != SPACING &&
+		env->interprete[*pos] != DELIMITER)
 	{
-		c = ptr_interprete[*pos];
+		c = env->interprete[*pos];
 		if ((unsigned long)c >= sizeof(env->should_len_tab))
 		{
 			write(2, error, sizeof(error) - 1);
@@ -97,15 +92,13 @@ size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 
 void		extract_content(t_env *env, size_t pos, char *ptr)
 {
-	const char		error[] = "extract_content id too big\n";
-	const size_t	len = env->len;
-	const char		*ptr_interprete = env->interprete;
-	char			c;
+	char		c;
+	const char	error[] = "extract_content id too big\n";
 
-	while (pos < len && ptr_interprete[pos] != SPACING &&
-		ptr_interprete[pos] != DELIMITER)
+	while (pos < env->len && env->interprete[pos] != SPACING &&
+		env->interprete[pos] != DELIMITER)
 	{
-		c = ptr_interprete[pos];
+		c = env->interprete[pos];
 		if ((unsigned long)c >= sizeof(env->extract_content_tab))
 		{
 			write(2, error, sizeof(error) - 1);
@@ -118,24 +111,22 @@ void		extract_content(t_env *env, size_t pos, char *ptr)
 
 int			set_argv(t_env *env)
 {
-	const char		*ptr_interprete = env->interprete;
-	const size_t	len = env->len;
-	size_t			pos;
-	size_t			tmp_pos;
-	size_t			alloc_len;
-	char			**ptr;
+	size_t	pos;
+	size_t	tmp_pos;
+	size_t	len;
+	char	**ptr;
 
 	ptr = env->argv;
 	env->error = NO_ERROR;
 	pos = env->start;
-	while (pos < len && ptr_interprete[pos] != DELIMITER)
+	while (pos < env->len && env->interprete[pos] != DELIMITER)
 	{
-		while (pos < len && ptr_interprete[pos] == SPACING)
+		while (pos < env->len && env->interprete[pos] == SPACING)
 			++pos;
 		tmp_pos = pos;
-		if ((alloc_len = should_len(env, &pos, &ptr)))
+		if ((len = should_len(env, &pos, &ptr)))
 		{
-			if (!(*ptr = (char *)debug_malloc(sizeof(char) * (alloc_len + 1))))
+			if (!(*ptr = (char *)debug_malloc(sizeof(char) * (len + 1))))
 				return (ERROR);
 			if (env->argv_pool_size < _POSIX_ARG_MAX)
 				env->argv_pool[env->argv_pool_size++] = *ptr;

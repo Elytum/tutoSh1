@@ -3,20 +3,18 @@
 
 void		debug_env(t_env *env)
 {
-	const char	*ptr_buffer = env->buffer;
-	const char	*ptr_interprete = env->interprete;
-	size_t		position;
+	size_t	position;
 
 	printf("Buffer:     {");
 	position = 0;
 	while (position <= env->len)
 	{
 		if (position == 0)
-			printf("'%c'", ptr_buffer[position]);
+			printf("'%c'", env->buffer[position]);
 		else if (position != env->len)
-			printf(", '%c'", ptr_buffer[position]);
+			printf(", '%c'", env->buffer[position]);
 		else
-			printf(", '%c'}.\n", ptr_buffer[position]);
+			printf(", '%c'}.\n", env->buffer[position]);
 		++position;
 	}
 
@@ -25,11 +23,11 @@ void		debug_env(t_env *env)
 	while (position <= env->len)
 	{
 		if (position == 0)
-			printf(" %i", ptr_interprete[position]);
+			printf(" %i", env->interprete[position]);
 		else if (position != env->len)
-			printf(",   %i", ptr_interprete[position]);
+			printf(",   %i", env->interprete[position]);
 		else
-			printf(",   %i}.\n", ptr_interprete[position]);
+			printf(",   %i}.\n", env->interprete[position]);
 		++position;
 	}
 	if (env->last_char == INTERPRETED)
