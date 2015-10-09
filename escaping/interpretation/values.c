@@ -1,6 +1,8 @@
 #include <interprete.h>
 #include <string.h>
 
+#include <stdio.h>
+
 void		interprete_value(t_env *env)
 {
 	size_t	newpos;

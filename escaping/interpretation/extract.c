@@ -55,7 +55,7 @@ int			avoid_allocation(t_env *env, size_t *pos, char ***ptr)
 				return (0);
 			++saved_pos;
 		}
-		if (env->interprete[saved_pos] == SPACING)
+		if (env->interprete[saved_pos] != SPACING)
 			return (0);
 		**ptr = env->buffer + *pos;
 		*pos = saved_pos;

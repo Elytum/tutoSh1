@@ -30,15 +30,15 @@ void		debug_env(t_env *env)
 			printf(",   %i}.\n", env->interprete[position]);
 		++position;
 	}
-	if (env->interprete[env->len] == INTERPRETED || env->interprete[env->len] == SPACING)
+	if (env->last_char == INTERPRETED)
 		printf("Line is closed\n");
-	else if (env->interprete[env->len] == SIMPLE_QUOTED)
+	else if (env->last_char == SIMPLE_QUOTED)
 		printf("Line is not closed due to a simple quote.\n");
-	else if (env->interprete[env->len] == DOUBLE_QUOTED)
+	else if (env->last_char == DOUBLE_QUOTED)
 		printf("Line is not closed due to a double quote.\n");
-	else if (env->interprete[env->len] == BACK_QUOTED)
+	else if (env->last_char == BACK_QUOTED)
 		printf("Line is not closed due to a back quote.\n");
-	else if (env->interprete[env->len] == BACKSLASHED)
+	else if (env->last_char == BACKSLASHED)
 		printf("Line is not closed due to a backslash.\n");
 }
 
