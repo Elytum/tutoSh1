@@ -2,33 +2,48 @@
 
 void		interprete_back_quote(t_env *env)
 {
-	env->interprete[env->pos++] = REMOVE;
-	while (env->pos <= env->len)
+	const char		*ptr_buffer = env->buffer;
+	const size_t	len = env->len;
+	size_t			pos;
+	char			*ptr_interprete;
+
+	ptr_interprete = env->interprete;
+	pos = env->pos;
+	ptr_interprete[pos++] = REMOVE;
+	while (pos <= len)
 	{
-		if (env->buffer[env->pos] == '`')
+		if (ptr_buffer[pos] == '`')
 		{
-			env->interprete[env->pos++] = REMOVE;
+			ptr_interprete[pos++] = REMOVE;
+			env->pos = pos;
 			return ;
 		}
 		else
-			env->interprete[env->pos++] = BACK_QUOTED;
+			ptr_interprete[pos++] = BACK_QUOTED;
 	}
+	env->pos = pos;
 	env->last_char = BACK_QUOTED;
 }
 
 void		process_back_quotes(t_env *env) // Actually just ignores it
 {
-	char	kind;
+	const size_t	len = env->len;
+	size_t			pos;
+	char			kind;
+	char			*ptr_interprete;
 
-	env->pos = env->start;
+	pos = env->pos;
+	ptr_interprete = env->interprete;
+	pos = env->start;
 	kind = INTERPRETED;
-	while (env->pos <= env->len)
+	while (pos <= len)
 	{
-		if (env->interprete[env->pos] == BACK_QUOTED)
-			env->interprete[env->pos] = kind;
-		kind = env->interprete[env->pos];
-		++env->pos;
+		if (ptr_interprete[pos] == BACK_QUOTED)
+			ptr_interprete[pos] = kind;
+		kind = ptr_interprete[pos];
+		++pos;
 	}
+	env->pos = pos;
 }
 
 size_t		len_back_quote(t_env *env, size_t *pos) // Implement once it can be

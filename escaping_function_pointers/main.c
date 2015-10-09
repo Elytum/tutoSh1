@@ -6,14 +6,14 @@
 
 // #define STRING "testing~ ~ \"begin ~lol end\" 'simple' \"double\""
 // #define STRING "exit \"-2000\" lol"
-// #define STRING "testing~ ~ \"begin ~$lol end\" 'simple' \"double\""
+#define STRING "testing~ ~ \"begin ~$lol end\" 'simple' \"double\""
 // #define STRING "ls \"~\" -la ./ / ~ $HOME $PWD"
 // #define STRING "ls \"-la\""
 // #define STRING "ls \"-la\" ; echo 'lol'"
 // #define STRING "$PWD ; \"lol\";"
 // #define STRING "; $l"
 // #define STRING "HOME$HOME"
-#define STRING "ls -la ; echo \"$PATH\" & echo \"$PATH\" || ls && pwd"
+// #define STRING "ls -la ; echo \"$PATH\" & echo \"$PATH\" || ls && pwd"
 
 // #define STRING "Line not closed with backslash \\"
 // #define STRING "Line not closed with simple quotes \""
@@ -121,9 +121,6 @@ t_env		*init_env(void)
 	if (!(env = (t_env *)debug_malloc(sizeof(t_env))))
 		return (ERROR);
 	env->local_variables = ht_create( 65536 );
-	// memcpy(env->line, STRING, _POSIX2_LINE_MAX);
-	// env->line[_POSIX2_LINE_MAX - 1] = '\0';
-	// env->len = sizeof(STRING) - 1;
 
 	memcpy(env->pwd, "<PWD VALUE>", sizeof(env->pwd));
 	memcpy(env->home, "<HOME VALUE>", sizeof(env->home));
@@ -167,11 +164,11 @@ void		*debug_malloc(size_t size)
 }
 
 #include <unistd.h>
+#include <time.h>
 
 int			main(void)
 {
 	t_env	*env;
-	// char	**tab;
 
 	if ((env = init_env()) == ERROR)
 		return (ERROR_EXIT);
@@ -180,6 +177,7 @@ int			main(void)
 	add_local_variable(env, "PATH", "/nfs/zfs-student-3/users/2014/achazal/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin");
 	
 	int i = 0;
+	srand(clock());
 	while (i++ < 1000000)
 	{
 		memcpy(env->line, STRING, _POSIX2_LINE_MAX);
@@ -192,18 +190,6 @@ int			main(void)
 			while (launch_interprete(env) == CONTINUE)
 			{
 				free_argv(env);
-				// tab = (char **)malloc(sizeof(char *) * 5);
-				// tab[0] = strdup("testing~");
-				// tab[1] = strdup("~");
-				// tab[2] = strdup("\"begin ~$lol end\"");
-				// tab[3] = strdup("'simple'");
-				// tab[4] = strdup("\"double\"");
-				// free(tab[0]);
-				// free(tab[1]);
-				// free(tab[2]);
-				// free(tab[3]);
-				// free(tab[4]);
-				// free(tab);
 			}
 		}
 	}

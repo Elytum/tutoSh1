@@ -3,51 +3,73 @@
 
 void		interprete_double_quote(t_env *env)
 {
-	env->interprete[env->pos++] = REMOVE;
-	while (env->pos <= env->len)
+	const char		*ptr_buffer = env->buffer;
+	char			*ptr_interprete;
+	const size_t	len = env->len;
+	size_t			tmp_pos;
+
+	ptr_interprete = env->interprete;
+	tmp_pos = env->pos + 1;
+	ptr_interprete[tmp_pos] = REMOVE;
+	while (tmp_pos <= len)
 	{
-		if (env->buffer[env->pos] == '\"')
+		if (ptr_buffer[tmp_pos] == '\"')
 		{
-			env->interprete[env->pos++] = REMOVE;
+			ptr_interprete[tmp_pos++] = REMOVE;
+			env->pos = tmp_pos;
 			return ;
 		}
-		else if (env->buffer[env->pos] == '`')
+		else if (ptr_buffer[tmp_pos] == '`')
 			interprete_back_quote(env);
-		else if (env->buffer[env->pos] == '$')
+		else if (ptr_buffer[tmp_pos] == '$')
 			interprete_value(env);
-		else if (env->pos < env->len &&
-			env->buffer[env->pos] == '\\' &&
-			(env->buffer[env->pos + 1] == '$' ||
-			env->buffer[env->pos + 1] == '`' ||
-			env->buffer[env->pos + 1] == '"' ||
-			env->buffer[env->pos + 1] == '\n'))
+		else if (tmp_pos < len &&
+			ptr_buffer[tmp_pos] == '\\' &&
+			(ptr_buffer[tmp_pos + 1] == '$' ||
+			ptr_buffer[tmp_pos + 1] == '`' ||
+			ptr_buffer[tmp_pos + 1] == '"' ||
+			ptr_buffer[tmp_pos + 1] == '\n'))
 			interprete_backslash(env);
 		else
-			env->interprete[env->pos++] = INTERPRETED;
+			ptr_interprete[tmp_pos++] = INTERPRETED;
 	}
 	env->last_char = DOUBLE_QUOTED;
+	env->pos = tmp_pos;
 }
 
 size_t		len_double_quote(t_env *env, size_t *pos)
 {
-	size_t	size;
+	const size_t	len = env->len;
+	const char		*ptr_interprete = env->interprete;
+	size_t			size;
+	size_t			tmp_pos;
 
 	size = 1;
-	++*pos;
-	while (*pos < env->len && env->interprete[*pos] == DOUBLE_QUOTED)
+	tmp_pos = *pos + 1;
+	while (tmp_pos < len && ptr_interprete[tmp_pos] == DOUBLE_QUOTED)
 	{
 		++size;
-		++*pos;
+		++tmp_pos;
 	}
+	*pos = tmp_pos;
 	return (size);
 }
 
 void		extract_double_quote(t_env *env, size_t *pos, char **ptr)
 {
-	while (env->interprete[*pos] == DOUBLE_QUOTED)
+	const char	*ptr_buffer = env->buffer;
+	const char	*ptr_interprete = env->interprete;
+	char		*tmp_ptr = *ptr;
+	size_t		tmp_pos;
+
+	tmp_ptr = *ptr;
+	tmp_pos = *pos;
+	while (ptr_interprete[tmp_pos] == DOUBLE_QUOTED)
 	{
-		**ptr = env->buffer[*pos];
-		++*ptr;
-		++*pos;
+		*tmp_ptr = ptr_buffer[tmp_pos];
+		++tmp_ptr;
+		++tmp_pos;
 	}
+	*ptr = tmp_ptr;
+	*pos = tmp_pos;
 }

@@ -21,10 +21,19 @@ size_t		len_normal(t_env *env, size_t *pos)
 
 void		extract_normal(t_env *env, size_t *pos, char **ptr)
 {
-	while (env->interprete[*pos] == INTERPRETED)
+	char		*ptr_buffer = env->buffer;
+	const char	*ptr_interprete = env->interprete;
+	size_t		tmp_pos;
+	char		*tmp_ptr;
+
+	tmp_pos = *pos;
+	tmp_ptr = *ptr;
+	while (ptr_interprete[tmp_pos] == INTERPRETED)
 	{
-		**ptr = env->buffer[*pos];
-		++*ptr;
-		++*pos;
+		*tmp_ptr = ptr_buffer[tmp_pos];
+		++tmp_ptr;
+		++tmp_pos;
 	}
+	*pos = tmp_pos;
+	*ptr = tmp_ptr;
 }
