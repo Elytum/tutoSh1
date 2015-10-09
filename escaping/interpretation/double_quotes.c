@@ -11,7 +11,7 @@ void		interprete_double_quote(t_env *env)
 		if (env->buffer[env->pos] == '\"')
 		{
 			env->interprete[env->pos++] = REMOVE;
-			break ;
+			return ;
 		}
 		else if (env->buffer[env->pos] == '`')
 			interprete_back_quote(env);
