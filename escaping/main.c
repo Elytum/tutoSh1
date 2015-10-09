@@ -13,8 +13,8 @@
 // #define STRING "$PWD ; \"lol\";"
 // #define STRING "; $l"
 // #define STRING "HOME$HOME"
-// #define STRING "ls -la ; echo \"$PATH\" & echo \"$PATH\" || ls && pwd"
-#define STRING "Line not closed with backslash \\"
+#define STRING "ls -la ; echo \"$PATH\" & echo \"$PATH\" || ls && pwd"
+// #define STRING "Line not closed with backslash \\"
 // #define STRING "Line not closed with simple quotes \""
 // #define STRING "Line not closed with double quotes '"
 // #define STRING "Line not closed with back quotes `"
@@ -47,7 +47,7 @@ void		free_argv(t_env *env)
 	id = 0;
 	while (id < env->argv_pool_size)
 	{
-		printf("Free of [%s]\n", env->argv_pool[id]);
+		// printf("Free of [%s]\n", env->argv_pool[id]);
 		free(env->argv_pool[id++]);
 	}
 	env->argv_pool_size = 0;
@@ -60,7 +60,7 @@ void		add_local_variable(t_env *env, const char *key, const char *value)
 
 void		*debug_malloc(size_t size)
 {
-	printf("\t\t<MALLOC>\n\t\tRequested a malloc of %lu\n\n", size);
+	// printf("\t\t<MALLOC>\n\t\tRequested a malloc of %lu\n\n", size);
 	return (malloc(size));
 }
 
@@ -76,19 +76,26 @@ int			main(void)
 	add_local_variable(env, "PWD", "/nfs/zfs-student-3/users/2014/achazal/tutoSh1/escaping");
 	add_local_variable(env, "PATH", "/nfs/zfs-student-3/users/2014/achazal/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin");
 	
-	if (start_interprete(env) == NOT_CLOSED)
+	int i = 0;
+	while (i++ < 1000000)
 	{
-		// debug_env(env);
-		write(1, "Line not closed\n", sizeof("Line not closed\n") - 1);
-	}
-	else
-	{
-		debug_env(env);
-		while (launch_interprete(env) == CONTINUE)
+		memcpy(env->line, STRING, _POSIX2_LINE_MAX);
+		env->line[_POSIX2_LINE_MAX - 1] = '\0';
+		env->len = sizeof(STRING) - 1;
+		if (start_interprete(env) == NOT_CLOSED)
 		{
-			debug_env(env);
-			put_env(env);
-			free_argv(env);
+			// debug_env(env);
+			write(1, "Line not closed\n", sizeof("Line not closed\n") - 1);
+		}
+		else
+		{
+			// debug_env(env);
+			while (launch_interprete(env) == CONTINUE)
+			{
+				// debug_env(env);
+				// put_env(env);
+				free_argv(env);
+			}
 		}
 	}
 	// while (42)

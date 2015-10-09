@@ -92,21 +92,19 @@ size_t		should_len(t_env *env, size_t *pos, char ***ptr)
 
 void		extract_content(t_env *env, size_t pos, char *ptr)
 {
+	char		c;
+	const char	error[] = "extract_content id too big\n";
+
 	while (pos < env->len && env->interprete[pos] != SPACING &&
 		env->interprete[pos] != DELIMITER)
 	{
-		if (env->interprete[pos] == INTERPRETED)
-			extract_normal(env, &pos, &ptr);
-		else if (env->interprete[pos] == SIMPLE_QUOTED)
-			extract_simple_quote(env, &pos, &ptr);
-		else if (env->interprete[pos] == DOUBLE_QUOTED)
-			extract_double_quote(env, &pos, &ptr);
-		else if (env->interprete[pos] == BACK_QUOTED)
-			extract_back_quote(env, &pos, &ptr);
-		else if (env->interprete[pos] == BACKSLASHED)
-			extract_backslash(env, &pos, &ptr);
-		else if (env->interprete[pos] == START_LOCAL_VARIABLE)
-			extract_value(env, &pos, &ptr);
+		c = env->interprete[pos];
+		if ((unsigned long)c >= sizeof(env->extract_content_tab))
+		{
+			write(2, error, sizeof(error) - 1);
+			exit(0);
+		}
+		env->extract_content_tab[(int)c](env, &pos, &ptr);
 	}
 	*ptr = '\0';
 }

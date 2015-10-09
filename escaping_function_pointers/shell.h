@@ -43,8 +43,9 @@ typedef struct	s_env
 	void		(*do_interprete_tab[256])(struct s_env *env);
 	char		interprete_value_stop[256];
 	char		standard_delimiters[256];
+	char		spaces[256];
 	size_t		(*should_len_tab[MAX_BASIC_INTERPRETATION])(struct s_env *env, size_t *pos);
-	void		(*extract_len_tab[MAX_BASIC_INTERPRETATION])(struct s_env *env, size_t *pos, char **ptr);
+	void		(*extract_content_tab[MAX_BASIC_INTERPRETATION])(struct s_env *env, size_t *pos, char **ptr);
 
 }				t_env;
 
