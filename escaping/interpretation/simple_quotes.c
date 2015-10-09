@@ -13,6 +13,7 @@ void		interprete_simple_quote(t_env *env)
 		else
 			env->interprete[env->pos++] = INTERPRETED;
 	}
+	env->last_char = SIMPLE_QUOTED;
 }
 
 size_t		len_simple_quote(t_env *env, size_t *pos)

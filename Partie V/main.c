@@ -8,15 +8,14 @@
 #define PROMPT "?> "
 #define SHELL_NAME "ft_sh1"
 #define COMMAND_NOT_FOUND SHELL_NAME": command not found: "
-#define ENV_TABLE_SIZE 256
 #define ENV_TABLE_CONTENT_SIZE 2048
 #define MAX_COMMAND_LEN 64
 
 typedef struct	s_env {
-char			env_table[ENV_TABLE_SIZE][ENV_TABLE_CONTENT_SIZE];
-char			*line;
-char			*command;
-char			flag;
+	char			env_table[_POSIX_ARG_MAX][ENV_TABLE_CONTENT_SIZE];
+	char			*line;
+	char			*command;
+	char			flag;
 }				t_env;
 
 void			builtin_env(t_env *env)

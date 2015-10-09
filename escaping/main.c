@@ -9,9 +9,13 @@
 // #define STRING "ls \"~\" -la ./ / ~ $HOME $PWD"
 // #define STRING "ls \"-la\""
 // #define STRING "ls \"-la\" ; echo 'lol'"
-#define STRING "\"$HOME\" \"$PATH\" \"$PWD\""
+// #define STRING "\"$HOME\" \"$PATH\" \"$PWD\""
 // #define STRING "lol$lol"
 // #define STRING "ls -la ; echo \"$PATH\" & echo \"$PATH\" || ls && pwd"
+#define STRING "Line not closed with backslash \\"
+// #define STRING "Line not closed with simple quotes \""
+// #define STRING "Line not closed with double quotes '"
+// #define STRING "Line not closed with back quotes `"
 
 t_env		*init_env(void)
 {
@@ -57,7 +61,7 @@ void		*debug_malloc(size_t size)
 	printf("\t\t<MALLOC>\n\t\tRequested a malloc of %lu\n\n", size);
 	return (malloc(size));
 }
-
+#include <unistd.h>
 int			main(void)
 {
 	t_env	*env;
@@ -68,11 +72,21 @@ int			main(void)
 	add_local_variable(env, "PWD", "/nfs/zfs-student-3/users/2014/achazal/tutoSh1/escaping");
 	add_local_variable(env, "PATH", "/nfs/zfs-student-3/users/2014/achazal/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin");
 	
-	start_interprete(env);
-	while (launch_interprete(env) == CONTINUE)
+	if (start_interprete(env) == NOT_CLOSED)
 	{
-		put_env(env);
-		free_argv(env);
+		debug_env(env);
+		write(1, "Line not closed\n", sizeof("Line not closed\n") - 1);
 	}
+	else
+	{
+		debug_env(env);
+		while (launch_interprete(env) == CONTINUE)
+		{
+			put_env(env);
+			free_argv(env);
+		}
+	}
+	// while (42)
+	// 	;
 	return (NORMAL_EXIT);
 }

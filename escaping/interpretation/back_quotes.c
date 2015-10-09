@@ -13,6 +13,7 @@ void		interprete_back_quote(t_env *env)
 		else
 			env->interprete[env->pos++] = BACK_QUOTED;
 	}
+	env->last_char = BACK_QUOTED;
 }
 
 void		process_back_quotes(t_env *env) // Actually just ignores it

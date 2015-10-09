@@ -77,12 +77,13 @@ char		start_interprete(t_env *env)
 {
 	if (env->len == 0)
 		return (STOP);
+	env->last_char = '\0';
 	env->start = 0;
 	memcpy(env->buffer, env->line, env->len + 1);
 	memset(env->interprete, '\0', env->len + 1);
 
 	do_interprete(env);
-	if (env->interprete[env->len] != INTERPRETED && env->interprete[env->len] != SPACING)
+	if (env->last_char)
 		return (NOT_CLOSED);
 	do_simplify(env);
 	do_process(env);

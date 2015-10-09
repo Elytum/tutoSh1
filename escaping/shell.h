@@ -37,6 +37,7 @@ typedef struct	s_env
 	char		error;
 	char		last_token;
 	char		pursue;
+	char		last_char;
 }				t_env;
 
 #endif

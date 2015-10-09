@@ -6,6 +6,11 @@ void		interprete_value(t_env *env)
 	size_t	newpos;
 
 	newpos = env->pos;
+	if (env->interprete[newpos + 1] == ' ' || env->interprete[newpos + 1] == '\t')
+	{
+		env->interprete[++newpos] = INTERPRETED;
+		return ;
+	}
 	env->interprete[newpos++] = START_LOCAL_VARIABLE;
 	while (env->buffer[newpos] != '\'' && env->buffer[newpos] != '\"' &&
 			env->buffer[newpos] != '\\' && env->buffer[newpos] != '`' &&

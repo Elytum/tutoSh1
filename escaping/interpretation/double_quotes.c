@@ -27,6 +27,7 @@ void		interprete_double_quote(t_env *env)
 		else
 			env->interprete[env->pos++] = INTERPRETED;
 	}
+	env->last_char = DOUBLE_QUOTED;
 }
 
 size_t		len_double_quote(t_env *env, size_t *pos)

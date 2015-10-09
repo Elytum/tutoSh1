@@ -2,6 +2,12 @@
 
 void		interprete_backslash(t_env *env)
 {
+	if (env->pos == env->len - 1)
+	{
+		++env->pos;
+		env->last_char = BACKSLASHED;
+		return ;
+	}
 	env->interprete[env->pos++] = REMOVE;
 	if (env->buffer[env->pos] == '\r')
 		env->interprete[env->pos] = REMOVE;
