@@ -165,12 +165,37 @@ int			get_line(char *buffer, size_t size)
 	return (read(1, buffer, size));
 }
 
+void		subshell(t_env *env, ssize_t *size)
+{
+	ssize_t	tmp;
+
+	env->multiline = 1;
+	if (env->last_char == SIMPLE_QUOTED)
+		write(1, "quote> ", 7);
+	else if (env->last_char == DOUBLE_QUOTED)
+		write(1, "dquote> ", 8);
+	else if (env->last_char == BACK_QUOTED)
+		write(1, "bquote> ", 8);
+	else if (env->last_char == BACKSLASHED)
+		write(1, "> ", 2);
+	else
+	{
+		write(1, "UNKNOWN ERROR WTF\n", 18);
+		exit (ERROR_EXIT);
+	}
+	if ((tmp = get_line(env->line + *size, sizeof(env->line) - *size)) < 0)
+	{
+		write(1, "Read error\n", 11);
+		exit (ERROR_EXIT);
+	}
+	*size += tmp;
+	env->len = *size;
+}
+
 int			main(void)
 {
 	t_env	*env;
 	ssize_t	size;
-	ssize_t	tmp;
-	char	multiline;
 
 	if ((env = init_env()) == ERROR)
 		return (ERROR_EXIT);
@@ -186,32 +211,10 @@ int			main(void)
 		env->line[sizeof(env->line) - 1] = '\0';
 		// /*TO BE MAYBE REMOVED*/ env->len = size;
 		/*TO BE MAYBE REMOVED*/env->len = size - 1;
-		multiline = 0;
+		env->multiline = 0;
 		while (start_interprete(env) == NOT_CLOSED)
-		{
-			multiline = 1;
-			if (env->last_char == SIMPLE_QUOTED)
-				write(1, "quote> ", 7);
-			else if (env->last_char == DOUBLE_QUOTED)
-				write(1, "dquote> ", 8);
-			else if (env->last_char == BACK_QUOTED)
-				write(1, "bquote> ", 8);
-			else if (env->last_char == BACKSLASHED)
-				write(1, "> ", 2);
-			else
-			{
-				write(1, "UNKNOWN ERROR WTF\n", 18);
-				return (ERROR_EXIT);
-			}
-			if ((tmp = get_line(env->line + size, sizeof(env->line) - size)) < 0)
-			{
-				write(1, "Read error\n", 11);
-				return (ERROR_EXIT);
-			}
-			size += tmp;
-			env->len = size;
-		}
-		if (multiline)
+			subshell(env, &size);
+		if (env->multiline)
 			--env->len;
 		while (launch_interprete(env) == CONTINUE)
 		{

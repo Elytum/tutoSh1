@@ -43,6 +43,7 @@ typedef struct	s_env
 	char		last_token;
 	char		pursue;
 	char		last_char;
+	char		multiline;
 
 	void		(*do_interprete_tab[256])(struct s_env *env);
 	char		interprete_double_quote_tab[256];

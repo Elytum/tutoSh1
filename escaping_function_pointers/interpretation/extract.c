@@ -48,6 +48,8 @@ int			avoid_allocation(t_env *env, size_t *pos, char ***ptr)
 		env->buffer[saved_pos] = tmp_char;
 		*pos = saved_pos;
 	}
+	else if (env->interprete[saved_pos] == BACK_QUOTED)
+		return (0);
 	else
 	{
 		while (saved_pos < env->len && env->interprete[saved_pos] != SPACING)
