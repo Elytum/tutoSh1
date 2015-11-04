@@ -179,29 +179,6 @@ void		do_execution(t_env *env)
 	pid_t			child;
 	int				stat_loc;
 
-	// if (launch_interprete(env) != CONTINUE)
-	// 	return ;
-	// while (42)
-	// {
-	// 	memcpy(env->argv_tmp, env->argv, sizeof(env->argv_tmp));
-	// 	if ((child = fork()) == -1)
-	// 	{
-	// 		write(1, fork_error, sizeof(fork_error));
-	// 		return ;
-	// 	}
-	// 	if (child == 0)
-	// 	{
-	// 		if (execve(env->argv_tmp[0], env->argv_tmp, NULL) == -1) //GOTTA ADD ENV
-	// 			write(1, execve_error, sizeof(execve_error));;
-	// 	}
-	// 	else
-	// 	{
-	// 		waitpid(child, &stat_loc, 0);
-	// 		if (launch_interprete(env) != CONTINUE)
-	// 			return ;
-	// 	}
-	// }
-
 	if (launch_interprete(env) != CONTINUE)
 		return ;
 	while (42)
@@ -209,7 +186,10 @@ void		do_execution(t_env *env)
 		memcpy(env->argv_tmp, env->argv, sizeof(env->argv_tmp));
 		child = fork();
 		if (child == -1)
+		{
 			write(1, fork_error, sizeof(fork_error));
+			return ;
+		}
 		else if (child != 0)
 		{
 			waitpid(child, &stat_loc, 0);
@@ -219,7 +199,10 @@ void		do_execution(t_env *env)
 		else
 		{
 			if (env->argv_tmp[0] && execve(env->argv_tmp[0], env->argv_tmp, NULL) == -1) //GOTTA ADD ENV
+			{
 				write(1, execve_error, sizeof(execve_error));
+				return ;
+			}
 		}
 	}
 }
