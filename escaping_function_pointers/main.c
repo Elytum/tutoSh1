@@ -168,23 +168,34 @@ int			get_line(char *buffer, size_t size)
 int			main(void)
 {
 	t_env	*env;
-	size_t	size;
-	// char	**tab;
+	ssize_t	size;
+	ssize_t	tmp;
 
 	if ((env = init_env()) == ERROR)
 		return (ERROR_EXIT);
 	add_local_variable(env, "HOME", "/nfs/zfs-student-3/users/2014/achazal");
 	add_local_variable(env, "PWD", "/nfs/zfs-student-3/users/2014/achazal/tutoSh1/escaping");
 	add_local_variable(env, "PATH", "/nfs/zfs-student-3/users/2014/achazal/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin");
-	
-	// int i = 0;
-	while ((size = get_line(env->line, sizeof(env->line))) > 0) //1000000
+
+	while ((size = get_line(env->line, sizeof(env->line))) > 0)
 	{
-		// memcpy(env->line, STRING, _POSIX2_LINE_MAX);
-		env->line[_POSIX2_LINE_MAX - 1] = '\0';
-		env->len = size - 1;
-		if (start_interprete(env) == NOT_CLOSED)
-			write(1, "Line not closed\n", sizeof("Line not closed\n") - 1);
+		env->line[sizeof(env->line) - 1] = '\0';
+		env->len = size; // -1
+		while (start_interprete(env) == NOT_CLOSED)
+		{
+			if (env->last_char == SIMPLE_QUOTED)
+				write(1, "quote> ", 7);
+			else if (env->last_char == DOUBLE_QUOTED)
+				write(1, "dquote> ", 8);
+			else if (env->last_char == BACK_QUOTED)
+				write(1, "bquote> ", 8);
+			else if (env->last_char == BACKSLASHED)
+				write(1, "> ", 2);
+			else
+				write(1, "UNKNOWN ERROR WTF\n", 18);
+			// write(1, "Line not closed\n", sizeof("Line not closed\n") - 1);
+			if ((tmp = get_line(env->line + size, sizeof(env->line) - size)))
+		}
 		else
 		{
 			while (launch_interprete(env) == CONTINUE)
@@ -194,7 +205,5 @@ int			main(void)
 			}
 		}
 	}
-	// while (42)
-	// 	;
 	return (NORMAL_EXIT);
 }
