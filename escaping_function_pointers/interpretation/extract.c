@@ -123,6 +123,8 @@ int			set_argv(t_env *env)
 	{
 		while (pos < env->len && env->interprete[pos] == SPACING)
 			++pos;
+		if (env->interprete[pos] == DELIMITER)
+			break ;
 		tmp_pos = pos;
 		if ((len = should_len(env, &pos, &ptr)))
 		{

@@ -4,11 +4,11 @@
 
 #include <stdio.h>
 
-#define STRING "testing~ ~ \"begin ~ end\" 'simple' \"double\""
+// #define STRING "testing~ ~ \"begin ~ end\" 'simple' \"double\""
 // #define STRING "exit \"-2000\" lol"
-// #define STRING "testing~ ~ \"begin ~$lol end\" 'simple' \"double\""
+// #define STRING "testing~ ~ \"begin ~ end\" 'simple' \"double\""
 // #define STRING "ls \"~\" -la ./ / ~ $HOME $PWD"
-// #define STRING "ls \"-la\""
+#define STRING "ls \"-la\""
 // #define STRING "ls \"-la\" ; echo 'lol'"
 // #define STRING "$PWD ; \"lol\";"
 // #define STRING "; $l"
@@ -160,9 +160,15 @@ void		*debug_malloc(size_t size)
 
 #include <unistd.h>
 
+int			get_line(char *buffer, size_t size)
+{
+	return (read(1, buffer, size));
+}
+
 int			main(void)
 {
 	t_env	*env;
+	size_t	size;
 	// char	**tab;
 
 	if ((env = init_env()) == ERROR)
@@ -171,31 +177,20 @@ int			main(void)
 	add_local_variable(env, "PWD", "/nfs/zfs-student-3/users/2014/achazal/tutoSh1/escaping");
 	add_local_variable(env, "PATH", "/nfs/zfs-student-3/users/2014/achazal/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin");
 	
-	int i = 0;
-	while (i++ < 1000000)
+	// int i = 0;
+	while ((size = get_line(env->line, sizeof(env->line))) > 0) //1000000
 	{
-		memcpy(env->line, STRING, _POSIX2_LINE_MAX);
+		// memcpy(env->line, STRING, _POSIX2_LINE_MAX);
 		env->line[_POSIX2_LINE_MAX - 1] = '\0';
-		env->len = sizeof(STRING) - 1;
+		env->len = size - 1;
 		if (start_interprete(env) == NOT_CLOSED)
 			write(1, "Line not closed\n", sizeof("Line not closed\n") - 1);
 		else
 		{
 			while (launch_interprete(env) == CONTINUE)
 			{
+				put_env(env);
 				free_argv(env);
-				// tab = (char **)malloc(sizeof(char *) * 5);
-				// tab[0] = strdup("testing~");
-				// tab[1] = strdup("~");
-				// tab[2] = strdup("\"begin ~$lol end\"");
-				// tab[3] = strdup("'simple'");
-				// tab[4] = strdup("\"double\"");
-				// free(tab[0]);
-				// free(tab[1]);
-				// free(tab[2]);
-				// free(tab[3]);
-				// free(tab[4]);
-				// free(tab);
 			}
 		}
 	}

@@ -23,6 +23,10 @@ typedef struct	s_env
 	char		line[_POSIX2_LINE_MAX];
 	char		buffer[_POSIX2_LINE_MAX];
 	char		interprete[_POSIX2_LINE_MAX];
+
+	char		extra_memory[_POSIX2_LINE_MAX];
+	size_t		extra_memory_size;
+
 	int			argc;
 	char		*argv[_POSIX_ARG_MAX];
 	hashtable_t	*local_variables;
