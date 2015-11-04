@@ -49,10 +49,10 @@ int			set_arguments(t_env *env)
 
 char		start_interprete(t_env *env)
 {
+	env->start = 0;
+	env->last_char = '\0';
 	if (env->len == 0)
 		return (STOP);
-	env->last_char = '\0';
-	env->start = 0;
 	memcpy(env->buffer, env->line, env->len + 1);
 	memset(env->interprete, '\0', env->len + 1);
 
