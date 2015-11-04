@@ -9,6 +9,8 @@
 #define NORMAL_EXIT 0
 #define ERROR_EXIT -1
 
+#define SHELL_NAME "GladoSH"
+
 # include <htable.h>
 # include <config.h>
 
@@ -29,6 +31,7 @@ typedef struct	s_env
 
 	int			argc;
 	char		*argv[_POSIX_ARG_MAX];
+	char		*argv_tmp[_POSIX_ARG_MAX];
 	hashtable_t	*local_variables;
 	
 	char		pwd[_POSIX_PATH_MAX];
