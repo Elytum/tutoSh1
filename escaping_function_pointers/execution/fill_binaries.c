@@ -4,16 +4,20 @@
 #include <string.h>
 #include <limits.h>
 
+#include <stdio.h>
+
 static void		file_fill(hashtable_t *binaries, char pwd[_POSIX_PATH_MAX],
-					size_t len, char file[_POSIX_NAME_MAX])
+					size_t len, char file[_POSIX_PATH_MAX])
 {
 	memcpy(pwd + len, file, _POSIX_NAME_MAX);
+	(void)binaries;
 }
 
 static void		file_link(hashtable_t *binaries, char pwd[_POSIX_PATH_MAX],
-					size_t len, char file[_POSIX_NAME_MAX])
+					size_t len, char file[_POSIX_PATH_MAX])
 {
 	memcpy(pwd + len, file, _POSIX_NAME_MAX);
+	(void)binaries;
 }
 
 static void		directory_fill(hashtable_t *binaries, char *directory, size_t len)
@@ -23,18 +27,19 @@ static void		directory_fill(hashtable_t *binaries, char *directory, size_t len)
 	DIR				*dir;
 	struct dirent	*ent;
 
-	if (len > _POSIX_PATH_MAX - _POSIX_NAME_MAX - 1)
-		return ;
+	dprintf(1, "_POSIX_PATH_MAX = %d\n_POSIX_NAME_MAX = %d\n\n", _POSIX_PATH_MAX, _POSIX_NAME_MAX);
+	// if (len > _POSIX_PATH_MAX - _POSIX_NAME_MAX - 1)
+		// return ;
 	directory[len] = '\0';
 	if ((dir = opendir (directory)) != NULL)
 	{
 		memcpy(pwd, directory, len);
 		pwd[len] = '/';
 		while ((ent = readdir(dir)) != NULL) {
-			if (ent.d_type & DT_REG)
-				file_fill(binaries, pwd, len, file);
-			else if (ent.d_type & DT_LNK)
-				file_link(binaries, pwd, len, file);
+			if (ent->d_type & DT_REG)
+				file_fill(binaries, pwd, len, ent->d_name);
+			else if (ent->d_type & DT_LNK)
+				file_link(binaries, pwd, len, ent->d_name);
 			write(1, ent->d_name, strlen(ent->d_name));
 			write(1, "\n", 1);
 		}
