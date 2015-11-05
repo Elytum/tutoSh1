@@ -10,7 +10,12 @@ t_env		*init_env(void)
 
 	if (!(env = (t_env *)debug_malloc(sizeof(t_env))))
 		return (ERROR);
+	
 	env->local_variables = ht_create( 65536 );
+	// env->alias = ht_create( 65536 );
+	// env->builtins = ht_create( 65536 );
+	// env->functions = ht_create( 65536 );
+
 	memcpy(env->pwd, "<PWD VALUE>", sizeof(env->pwd));
 	memcpy(env->home, "<HOME VALUE>", sizeof(env->home));
 

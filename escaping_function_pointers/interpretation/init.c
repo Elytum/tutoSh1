@@ -1,13 +1,15 @@
 #include <shell.h>
 #include <interprete.h>
 #include <string.h>
+#include <stdio.h>
+#include <macro.h>
 
 void		init_do_interprete_tab(t_env *env)
 {
 	unsigned int i;
 
 	i = 0;
-	while (i < sizeof(env->do_interprete_tab))
+	while (i < TAB_SIZE(env->do_interprete_tab))
 		env->do_interprete_tab[i++] = &interprete_normal;
 	env->do_interprete_tab['\''] = &interprete_simple_quote;
 	env->do_interprete_tab['\"'] = &interprete_double_quote;
@@ -21,7 +23,6 @@ void		init_do_interprete_tab(t_env *env)
 	env->do_interprete_tab[';'] = &interprete_comma;
 	env->do_interprete_tab['&'] = &interprete_background;
 	env->do_interprete_tab['|'] =  &interprete_pipe;
-
 }
 
 void		init_interprete_value_stop(t_env *env)
