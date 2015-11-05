@@ -2,14 +2,6 @@
 #include <interprete.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/stat.h>
-
-static char		executable_file(const char *path)
-{
-	struct stat		sb;
-
-	return (stat(path, &sb) == 0 && sb.st_mode & S_IXUSR);
-}
 
 static char		launch_builtin(t_env *env)
 {
@@ -33,12 +25,13 @@ static char		launch_binary(t_env *env)
 
 	if (executable_file(env->argv[0]))
 		path = env->argv[0];
-	else if (!(path = ht_get(env->binaries, env->argv[0])))
+	else if (!(path = ht_get(env->binaries, env->argv[0])) ||
+			!executable_file(path))
 		return (0);
 	child = fork();
 	if (child == -1)
 	{
-		write(1, fork_error, sizeof(fork_error));
+		write(1, fork_error, sizeof(fork_error) - 1);
 		return (-1);
 	}
 	else if (child != 0)
@@ -54,7 +47,7 @@ static char		launch_binary(t_env *env)
 	{
 		if (env->argv_tmp[0] && execve(env->argv_tmp[0], env->argv_tmp, NULL) == -1) //GOTTA ADD ENV
 		{
-			write(1, execve_error, sizeof(execve_error));
+			write(1, execve_error, sizeof(execve_error) - 1);
 			return (-1);
 		}
 		exit(0);
@@ -78,6 +71,7 @@ void			launch_command(t_env *env)
 {
 	char			ret;
 
+	fill_binaries(env->binaries);
 	if (launch_interprete(env) != CONTINUE)
 		return ;
 	while (42)
