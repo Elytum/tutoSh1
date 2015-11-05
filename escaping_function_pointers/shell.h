@@ -58,4 +58,6 @@ typedef struct	s_env
 
 }				t_env;
 
+void		launch_command(t_env *env);
+
 #endif

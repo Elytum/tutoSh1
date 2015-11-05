@@ -54,4 +54,12 @@ void		add_local_variable(t_env *env, const char *key, const char *value);
 
 void		*debug_malloc(size_t size);
 
+void		init_do_interprete_tab(t_env *env);
+void		init_interprete_value_stop(t_env *env);
+void		init_standard_delimiters(t_env *env);
+void		init_spaces(t_env *env);
+void		init_should_len_tab(t_env *env);
+void		init_extract_content_tab(t_env *env);
+void		init_interprete_double_quote_tab(t_env *env);
+
 #endif
