@@ -1,3 +1,5 @@
+#include <string.h>
+
 char			*get_env_name(const char *line)
 {
 	static char	buffer[128];

@@ -118,7 +118,7 @@ int			set_argv(t_env *env)
 	size_t	len;
 	char	**ptr;
 
-	ptr = env->argv;
+	ptr = env->argv_tmp;
 	env->error = NO_ERROR;
 	pos = env->start;
 	while (pos < env->len && env->interprete[pos] != DELIMITER)

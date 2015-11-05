@@ -3,6 +3,8 @@
 
 #include <shell.h>
 
+void			init_builtins(hashtable_t *table);
+
 char			*get_env_name(const char *line);
 int				env_name_match(char *cmp, char *tab);
 

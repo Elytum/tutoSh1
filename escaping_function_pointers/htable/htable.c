@@ -112,7 +112,7 @@ void ht_set( hashtable_t *hashtable, char *key, void *value ) {
 }
 
 /* Retrieve a key-value pair from a hash table. */
-char *ht_get( hashtable_t *hashtable, char *key ) {
+void 	*ht_get( hashtable_t *hashtable, char *key ) {
 	int bin = 0;
 	entry_t *pair;
 

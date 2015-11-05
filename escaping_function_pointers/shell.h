@@ -58,7 +58,7 @@ typedef struct		s_env
 	hashtable_t		*local_variables;
 	hashtable_t		*alias;
 	hashtable_t		*builtins;
-	hashtable_t		*functions;
+	hashtable_t		*binaries;
 }					t_env;
 
 void		launch_command(t_env *env);
