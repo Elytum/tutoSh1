@@ -2,6 +2,14 @@
 #include <interprete.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
+
+static char		executable_file(const char *path)
+{
+	struct stat		sb;
+
+	return (stat(path, &sb) == 0 && sb.st_mode & S_IXUSR);
+}
 
 static char		launch_builtin(t_env *env)
 {
@@ -23,7 +31,9 @@ static char		launch_binary(t_env *env)
 	pid_t			child;
 	int				stat_loc;
 
-	if (!(path = ht_get(env->binaries, env->argv[0])))
+	if (executable_file(env->argv[0]))
+		path = env->argv[0];
+	else if (!(path = ht_get(env->binaries, env->argv[0])))
 		return (0);
 	child = fork();
 	if (child == -1)
@@ -64,7 +74,7 @@ static char		unknown_function(t_env *env)
 	return (0);
 }
 
-void		launch_command(t_env *env)
+void			launch_command(t_env *env)
 {
 	char			ret;
 

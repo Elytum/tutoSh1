@@ -19,6 +19,8 @@
 
 typedef struct		s_env
 {
+	char			*intro;
+	
 	size_t			len;
 	size_t			pos;
 	size_t			start;

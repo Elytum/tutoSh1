@@ -17,6 +17,8 @@ t_env		*init_env(void)
 	env->alias = ht_create( 8192 );
 	env->builtins = ht_create( 8192 );
 	env->binaries = ht_create( 8192 );
+	
+	env->intro = strdup(SHELL_NAME"> ");
 
 	init_builtins(env->builtins);
 
@@ -63,8 +65,9 @@ void		*debug_malloc(size_t size)
 
 #include <unistd.h>
 
-int			get_line(char *buffer, size_t size)
+int			get_line(const char *intro, char *buffer, size_t size)
 {
+	write(1, intro, strlen(intro));
 	return (read(1, buffer, size));
 }
 
@@ -86,7 +89,7 @@ void		subshell(t_env *env, ssize_t *size)
 		write(1, "UNKNOWN ERROR WTF\n", 18);
 		exit (ERROR_EXIT);
 	}
-	if ((tmp = get_line(env->line + *size, sizeof(env->line) - *size)) < 0)
+	if ((tmp = get_line("", env->line + *size, sizeof(env->line) - *size)) < 0)
 	{
 		write(1, "Read error\n", 11);
 		exit (ERROR_EXIT);
@@ -109,7 +112,7 @@ int			main(void)
 	add_local_variable(env, "PWD", "/nfs/zfs-student-3/users/2014/achazal/tutoSh1/escaping");
 	add_local_variable(env, "PATH", "/nfs/zfs-student-3/users/2014/achazal/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin");
 
-	while ((size = get_line(env->line, sizeof(env->line))) > 0)
+	while ((size = get_line(env->intro, env->line, sizeof(env->line))) > 0)
 	{
 		env->multiline = 0;
 
