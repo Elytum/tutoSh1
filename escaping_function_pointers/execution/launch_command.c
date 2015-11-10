@@ -14,7 +14,7 @@ static char		launch_builtin(t_env *env)
 		return (-1);
 	return (1);
 }
-
+#include <stdio.h>
 static char		launch_binary(t_env *env)
 {
 	const char		fork_error[] = SHELL_NAME": fork error\n";
@@ -28,7 +28,15 @@ static char		launch_binary(t_env *env)
 	else if (!(path = ht_get(env->binaries, env->argv[0])) ||
 			!executable_file(path))
 		return (0);
+
+	// dprintf(1, "Step 1 done\n");
+	// sleep(5);
+
 	child = fork();
+
+	// dprintf(1, "Step 2 done\n");
+	// sleep(5);
+
 	if (child == -1)
 	{
 		write(1, fork_error, sizeof(fork_error) - 1);
@@ -45,6 +53,7 @@ static char		launch_binary(t_env *env)
 	}
 	else
 	{
+		exit(0);
 		if (env->argv_tmp[0] && execve(env->argv_tmp[0], env->argv_tmp, NULL) == -1) //GOTTA ADD ENV
 		{
 			write(1, execve_error, sizeof(execve_error) - 1);
@@ -52,6 +61,10 @@ static char		launch_binary(t_env *env)
 		}
 		exit(0);
 	}
+
+	// dprintf(1, "Step 3 done\n");
+	// sleep(5);
+
 	return (1);
 }
 

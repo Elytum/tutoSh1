@@ -6,42 +6,62 @@
 
 #include <stdio.h>
 
-static void		file_fill(hashtable_t *binaries, char pwd[_POSIX_PATH_MAX],
-					size_t len, char file[_POSIX_PATH_MAX])
+static char		*compose_path(const char *directory, size_t len, const char *file)
 {
-	memcpy(pwd + len, file, _POSIX_NAME_MAX);
-	(void)binaries;
+	char			*composed_path;
+	const size_t	file_len = strlen(file);
+
+	if (!(composed_path = (char *)malloc(sizeof(char) * (len + file_len + 2))))
+		return (NULL);
+	memcpy(composed_path, directory, len);
+	composed_path[len] = '/';
+	memcpy(composed_path + 1 + len, file, file_len);
+	composed_path[len + file_len + 1] = '\0';
+	return (composed_path);
 }
 
-static void		file_link(hashtable_t *binaries, char pwd[_POSIX_PATH_MAX],
+static void		file_fill(hashtable_t *binaries, char *directory,
 					size_t len, char file[_POSIX_PATH_MAX])
 {
-	memcpy(pwd + len, file, _POSIX_NAME_MAX);
+	char		*full_path;
+
+	if (!(full_path = compose_path(directory, len, file)))
+		return ;
+	if (!(ht_get(binaries, file)))
+		ht_set(binaries, strdup(file), strdup(full_path));
 	(void)binaries;
+	free(full_path);
+}
+
+static void		file_link(hashtable_t *binaries, char *directory,
+					size_t len, char file[_POSIX_PATH_MAX])
+{
+	char		*full_path;
+
+	if (!(full_path = compose_path(directory, len, file)))
+		return ;
+	if (!(ht_get(binaries, file)))
+		ht_set(binaries, strdup(file), strdup(full_path));
+	(void)binaries;
+	free(full_path);
 }
 
 static void		directory_fill(hashtable_t *binaries, char *directory, size_t len)
 {
 	const char		c = directory[len];
-	char			pwd[_POSIX_PATH_MAX];
 	DIR				*dir;
 	struct dirent	*ent;
 
-	dprintf(1, "_POSIX_PATH_MAX = %d\n_POSIX_NAME_MAX = %d\n\n", _POSIX_PATH_MAX, _POSIX_NAME_MAX);
-	// if (len > _POSIX_PATH_MAX - _POSIX_NAME_MAX - 1)
-		// return ;
 	directory[len] = '\0';
 	if ((dir = opendir (directory)) != NULL)
 	{
-		memcpy(pwd, directory, len);
-		pwd[len] = '/';
 		while ((ent = readdir(dir)) != NULL) {
 			if (ent->d_type & DT_REG)
-				file_fill(binaries, pwd, len, ent->d_name);
+				file_fill(binaries, directory, len, ent->d_name);
 			else if (ent->d_type & DT_LNK)
-				file_link(binaries, pwd, len, ent->d_name);
-			write(1, ent->d_name, strlen(ent->d_name));
-			write(1, "\n", 1);
+				file_link(binaries, directory, len, ent->d_name);
+			// write(1, ent->d_name, strlen(ent->d_name));
+			// write(1, "\n", 1);
 		}
 		closedir (dir);
 	}
@@ -55,6 +75,7 @@ void			fill_binaries(hashtable_t *binaries)
 	char			*old_ptr;
 	char			*new_ptr;
 
+	ht_clear(binaries);
 	(void)binaries;
 	old_ptr = (char *)path;
 	while (*old_ptr)

@@ -18,5 +18,7 @@ int				ht_hash( hashtable_t *hashtable, char *key );
 entry_t			*ht_newpair( char *key, void *value );
 void			ht_set( hashtable_t *hashtable, char *key, void *value );
 void			*ht_get( hashtable_t *hashtable, char *key );
+void			ht_free(hashtable_t *hashtable);
+void			ht_clear(hashtable_t *hashtable);
 
 #endif

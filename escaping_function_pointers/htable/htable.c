@@ -68,6 +68,58 @@ entry_t *ht_newpair( char *key, void *value ) {
 	return newpair;
 }
 
+void	ht_free(hashtable_t *hashtable)
+{
+	int			i;
+	entry_t		*ptr;
+	entry_t		*next;
+
+	i = hashtable->size;
+	while (i < hashtable->size)
+	{
+		if (!(ptr = hashtable->table[i++]))
+			continue ;
+		while (ptr != NULL && ptr->key != NULL) {
+			next = ptr->next;
+			free(ptr->key);
+			free(ptr->value);
+			free(ptr);
+			ptr = next;
+		}
+	}
+	free(hashtable->table);
+	free(hashtable);
+}
+
+void	ht_clear(hashtable_t *hashtable)
+{
+	int			i;
+	entry_t		*ptr;
+	entry_t		*next;
+
+	i = hashtable->size;
+	while (i < hashtable->size)
+	{
+		if (!(ptr = hashtable->table[i++]))
+			continue ;
+		next = ptr->next;
+		free(ptr->key);
+		ptr->key = NULL;
+		free(ptr->value);
+		ptr->value = NULL;
+		ptr->next = NULL;
+
+		ptr = next;
+		while (ptr != NULL && ptr->key != NULL) {
+			next = ptr->next;
+			free(ptr->key);
+			free(ptr->value);
+			free(ptr);
+			ptr = next;
+		}
+	}
+}
+
 /* Insert a key-value pair into a hash table. */
 void ht_set( hashtable_t *hashtable, char *key, void *value ) {
 	int bin = 0;
@@ -133,21 +185,3 @@ void 	*ht_get( hashtable_t *hashtable, char *key ) {
 	}
 	
 }
-
-
-// int main( int argc, char **argv ) {
-
-// 	hashtable_t *hashtable = ht_create( 65536 );
-
-// 	ht_set( hashtable, "key1", strdup("inky"));
-// 	ht_set( hashtable, "key2", strdup("pinky"));
-// 	ht_set( hashtable, "key3", strdup("blinky"));
-// 	ht_set( hashtable, "key4", strdup("floyd"));
-
-// 	printf( "%s\n", ht_get( hashtable, "key1" ) );
-// 	printf( "%s\n", ht_get( hashtable, "key2" ) );
-// 	printf( "%s\n", ht_get( hashtable, "key3" ) );
-// 	printf( "%s\n", ht_get( hashtable, "key4" ) );
-
-// 	return 0;
-// }
