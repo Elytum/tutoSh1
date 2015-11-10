@@ -14,27 +14,13 @@ static char		launch_builtin(t_env *env)
 		return (-1);
 	return (1);
 }
-#include <stdio.h>
-static char		launch_binary(t_env *env)
-{
-	const char		fork_error[] = SHELL_NAME": fork error\n";
-	const char		execve_error[] = SHELL_NAME": execve error\n";
-	char			*path;
-	pid_t			child;
-	int				stat_loc;
 
-	if (executable_file(env->argv[0]))
-		path = env->argv[0];
-	else if (!(path = ht_get(env->binaries, env->argv[0])) ||
-			!executable_file(path))
-		return (0);
-	child = fork();
-	if (child == -1)
-	{
-		write(1, fork_error, sizeof(fork_error) - 1);
-		return (-1);
-	}
-	else if (child == 0)
+static char		handling_binary(t_env *env, pid_t child, const char *path)
+{
+	const char		execve_error[] = SHELL_NAME": execve error\n";
+	int				stat_loc;
+	
+	if (child == 0)
 	{
 		if (path && execve(path, env->argv_tmp, NULL) == -1) //GOTTA ADD ENV
 			write(1, execve_error, sizeof(execve_error) - 1);
@@ -50,6 +36,26 @@ static char		launch_binary(t_env *env)
 		waitpid(child, &stat_loc, 0);
 	}
 	return (1);
+}
+
+static char		launch_binary(t_env *env)
+{
+	const char		fork_error[] = SHELL_NAME": fork error\n";
+	char			*path;
+	pid_t			child;
+
+	if (executable_file(env->argv[0]))
+		path = env->argv[0];
+	else if (!(path = ht_get(env->binaries, env->argv[0])) ||
+			!executable_file(path))
+		return (0);
+	child = fork();
+	if (child == -1)
+	{
+		write(1, fork_error, sizeof(fork_error) - 1);
+		return (-1);
+	}
+	return (handling_binary(env, child, path));
 }
 
 static char		unknown_function(t_env *env)
@@ -86,11 +92,7 @@ void			launch_command(t_env *env)
 				return ;
 			continue ;
 		}
-		else
-		{
-			if ((ret = unknown_function(env) == -1))
-				return ;
-			continue ;
-		}
+		if ((ret = unknown_function(env) == -1))
+			return ;
 	}
 }
