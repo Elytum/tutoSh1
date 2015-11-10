@@ -60,16 +60,14 @@ static void		directory_fill(hashtable_t *binaries, char *directory, size_t len)
 				file_fill(binaries, directory, len, ent->d_name);
 			else if (ent->d_type & DT_LNK)
 				file_link(binaries, directory, len, ent->d_name);
-			// write(1, ent->d_name, strlen(ent->d_name));
-			// write(1, "\n", 1);
 		}
-		closedir (dir);
+		closedir(dir);
 	}
 
 	directory[len] = c;
 }
 
-void			fill_binaries(hashtable_t *binaries)
+void			refresh_binaries(hashtable_t *binaries)
 {
 	char			path[] = "/nfs/zfs-student-3/users/2014/achazal/.brew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/texbin";
 	char			*old_ptr;

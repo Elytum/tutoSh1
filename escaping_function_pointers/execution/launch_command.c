@@ -28,21 +28,19 @@ static char		launch_binary(t_env *env)
 	else if (!(path = ht_get(env->binaries, env->argv[0])) ||
 			!executable_file(path))
 		return (0);
-
-	// dprintf(1, "Step 1 done\n");
-	// sleep(5);
-
 	child = fork();
-
-	// dprintf(1, "Step 2 done\n");
-	// sleep(5);
-
 	if (child == -1)
 	{
 		write(1, fork_error, sizeof(fork_error) - 1);
 		return (-1);
 	}
-	else if (child != 0)
+	else if (child == 0)
+	{
+		if (path && execve(path, env->argv_tmp, NULL) == -1) //GOTTA ADD ENV
+			write(1, execve_error, sizeof(execve_error) - 1);
+		exit(0);
+	}
+	else
 	{
 		if (launch_interprete(env) != CONTINUE)
 		{
@@ -51,20 +49,6 @@ static char		launch_binary(t_env *env)
 		}
 		waitpid(child, &stat_loc, 0);
 	}
-	else
-	{
-		exit(0);
-		if (env->argv_tmp[0] && execve(env->argv_tmp[0], env->argv_tmp, NULL) == -1) //GOTTA ADD ENV
-		{
-			write(1, execve_error, sizeof(execve_error) - 1);
-			return (-1);
-		}
-		exit(0);
-	}
-
-	// dprintf(1, "Step 3 done\n");
-	// sleep(5);
-
 	return (1);
 }
 
@@ -84,7 +68,7 @@ void			launch_command(t_env *env)
 {
 	char			ret;
 
-	fill_binaries(env->binaries);
+	refresh_binaries(env->binaries);
 	if (launch_interprete(env) != CONTINUE)
 		return ;
 	while (42)
