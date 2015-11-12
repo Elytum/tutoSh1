@@ -8,4 +8,6 @@ void			init_builtins(hashtable_t *table)
 	ht_set(table, "setenv", &builtin_setenv);
 	ht_set(table, "unsetenv", &builtin_unsetenv);
 	ht_set(table, "exit", &builtin_exit);
+	ht_set(table, "which", &builtin_which);
+	ht_set(table, "echo", &builtin_echo);
 }

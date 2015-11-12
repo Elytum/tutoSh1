@@ -13,5 +13,7 @@ void			builtin_env(t_env *env);
 void			builtin_exit(t_env *env);
 void			builtin_setenv(t_env *env);
 void			builtin_unsetenv(t_env *env);
+void			builtin_which(t_env *env);
+void			builtin_echo(t_env *env);
 
 #endif
