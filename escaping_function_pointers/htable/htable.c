@@ -183,5 +183,34 @@ void 	*ht_get( hashtable_t *hashtable, char *key ) {
 	} else {
 		return pair->value;
 	}
-	
+}
+
+void			ht_remove( hashtable_t *hashtable, char *key )
+{
+	int bin = 0;
+	entry_t *pair;
+	entry_t *old;
+
+	bin = ht_hash( hashtable, key );
+
+	/* Step through the bin, looking for our value. */
+	pair = hashtable->table[ bin ];
+	old = NULL;
+	while( pair != NULL && pair->key != NULL && strcmp( key, pair->key ) > 0 ) {
+		old = pair;
+		pair = pair->next;
+	}
+
+	/* Did we actually find anything? */
+	if( pair == NULL || pair->key == NULL || strcmp( key, pair->key ) != 0 ) {
+		return ;
+
+	} else {
+		if (old)
+			old->next = pair->next;
+		free(pair->key);
+		free(pair->value);
+		free(pair);
+		pair = NULL;
+	}
 }
